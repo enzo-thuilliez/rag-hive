@@ -21,10 +21,13 @@ jobs:
         working-directory: backend
     steps:
       - uses: actions/checkout@v7
-      - uses: astral-sh/setup-uv@v10
+      # setup-uv publishes no floating major tag (`@v10` does not resolve), so pin the commit.
+      # uv reads the Python version from the root .python-version itself.
+      - uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
         with:
-          python-version-file: .python-version
+          working-directory: backend
           enable-cache: true
+          cache-dependency-glob: uv.lock
       - run: uv sync --locked
       - run: uv run ruff check .
       - run: uv run ruff format --check .
