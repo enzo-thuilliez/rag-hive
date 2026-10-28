@@ -23,6 +23,8 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
+- Dependabot groups take minor and patch bumps only; majors come as separate PRs, and
+  TypeScript stays below 6.1 until typescript-eslint supports it.
 - CI runs on `ubuntu-24.04` with every action pinned to a commit SHA; `dependabot.yml` opens
   weekly grouped updates for GitHub Actions, uv and npm.
 - Workflow docs: issue → branch → PR with `Closes #N` → squash merge, `type:*`, `area:*` and
