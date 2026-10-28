@@ -670,5 +670,6 @@
     ],
     "title": "RunGraph",
     "type": "object"
-  }
+  },
+  "apiPrefix": "/api"
 }
