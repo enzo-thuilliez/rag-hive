@@ -39,7 +39,8 @@ A monorepo with two independent projects:
   - `agents/`: one module per agent (input/output models, `run_*`, LangGraph node),
     `state.py` (`WorkflowState`), `graph.py` (the topology, the `StateGraph` and the `RunGraph`
     served to the dashboard), `topology.py` (`RunGraph` wire types).
-  - `corpus/`: `CorpusEntry`, manifest loading, the checksum-verified downloader.
+  - `corpus/`: `CorpusEntry` / `CorpusManifest`, manifest loading, the checksum-verified
+    downloader and `python -m rag_hive.corpus` (`make corpus`).
   - `evaluation/`: `golden.py` (`GoldenQuestion`), `span_matching.py`, `metrics/retrieval.py`,
     `metrics/parsing.py`.
   - `schema.py`: `make schema` exports wire types to `frontend/src/api/schema.json` and the
@@ -47,7 +48,7 @@ A monorepo with two independent projects:
 - `frontend/`: Vite + React + TypeScript app managed with pnpm. `src/api/` holds the typed
   client and the hand-written mirrors of backend wire types; `src/pages/` the routes.
 - `docs/`: architecture notes and generated data schemas. `data/`: local PDFs and outputs,
-  gitignored.
+  gitignored, except `data/corpus/manifest.yaml`. Never commit a PDF.
 
 ## Conventions
 
@@ -76,7 +77,8 @@ make dev          # backend :8000 (reload) + frontend :5173 (proxies /api)
 make lint         # ruff check + format check, eslint, prettier check
 make typecheck    # mypy --strict, tsc -b
 make test         # pytest, vitest
-make schema       # regenerate frontend/src/api/schema.json
+make schema       # regenerate frontend/src/api/schema.json and docs/schemas/
+make corpus       # download + verify the corpus PDFs into data/corpus/raw/ (never committed)
 make help
 ```
 

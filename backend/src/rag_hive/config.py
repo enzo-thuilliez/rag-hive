@@ -53,6 +53,11 @@ class Settings(BaseSettings):
     embedding_provider: EmbeddingProviderName = "sentence-transformers"
     embedding_model: str = "BAAI/bge-m3"
 
+    corpus_manifest_path: Path = REPO_ROOT / "data" / "corpus" / "manifest.yaml"
+    corpus_raw_dir: Path = REPO_ROOT / "data" / "corpus" / "raw"
+    corpus_download_timeout_seconds: float = Field(default=120.0, gt=0)
+    corpus_user_agent: str = "rag-hive-corpus/0.1 (+https://github.com/enzo-thuilliez/rag-hive)"
+
 
 @lru_cache
 def get_settings() -> Settings:

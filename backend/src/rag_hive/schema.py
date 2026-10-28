@@ -3,8 +3,8 @@
 - The wire types and the API prefix go to `frontend/src/api/schema.json`. The frontend mirrors
   these types by hand in `frontend/src/api/`; the committed file lets tests on both sides catch
   drift.
-- The data models of hand-written files (`CorpusEntry`, `GoldenQuestion`) go to `docs/schemas/`,
-  one file each, for editors and other tools that validate the YAML.
+- The data models of hand-written files (`CorpusEntry`, `CorpusManifest`, `GoldenQuestion`) go
+  to `docs/schemas/`, one file each, for editors and other tools that validate the YAML.
 """
 
 import json
@@ -16,7 +16,7 @@ from rag_hive.agents.topology import RunGraph
 from rag_hive.api import API_PREFIX
 from rag_hive.api.health import HealthResponse
 from rag_hive.config import REPO_ROOT
-from rag_hive.corpus.models import CorpusEntry
+from rag_hive.corpus.models import CorpusEntry, CorpusManifest
 from rag_hive.evaluation.golden import GoldenQuestion
 from rag_hive.events.schema import agent_event_adapter
 
@@ -28,6 +28,7 @@ DATA_SCHEMA_DIR = REPO_ROOT / "docs" / "schemas"
 
 DATA_MODELS: dict[str, type[BaseModel]] = {
     "corpus-entry.schema.json": CorpusEntry,
+    "corpus-manifest.schema.json": CorpusManifest,
     "golden-question.schema.json": GoldenQuestion,
 }
 """Data models exported to `DATA_SCHEMA_DIR`, by file name."""

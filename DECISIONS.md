@@ -95,3 +95,27 @@ ones, supersede them instead.
   readable before it works. A wrong early guess costs an ADR rather than a quiet edit, which is
   the point: the change is recorded. Stubs that turn out to be unneeded are removed the same
   way.
+
+## ADR-007: Manual downloads for gated corpus documents
+
+- **Status:** accepted (2026-10-29). Amends the `CorpusEntry` interface frozen by ADR-006.
+- **Context:** Some corpus documents cannot be fetched by a script without getting around a
+  gate: Amundi's ETF documents sit behind an investor-profile disclaimer, totalenergies.com
+  answers automated requests with 403, and NVIDIA's 10-Q has no direct PDF link. Working
+  around a gate is not acceptable, but those documents (French text, fund factsheets, KIDs)
+  are part of what the benchmark has to cover.
+- **Decision:** `CorpusEntry` gets `download: auto | manual`. An `auto` entry needs `url` and
+  `sha256`. A `manual` entry has no `url`; it needs `source_page` and a one-line
+  `instructions`, and may leave `sha256` empty until a person has downloaded and inspected the
+  file. `pages` and `properties` become optional and are required once `sha256` is set. The
+  manifest file is a `CorpusManifest` (`documents`, unique ids). `ensure_document` takes the
+  HTTP client as a keyword argument (so tests mock it) and returns whether it downloaded. For
+  manual entries, `make corpus` only verifies a file a person saved under the expected name,
+  prints the instructions for every missing one, and exits non-zero. The
+  `DocumentProperties.scanned` description now says "scanned images, any text layer from OCR",
+  since most public scans carry an OCR layer.
+- **Consequences:** Every corpus document is still pinned by checksum, and nothing is fetched
+  in a way the publisher blocks. A fresh clone cannot reach a complete corpus with one command:
+  someone downloads the manual files once, and benchmarks that need them fail loudly until
+  then. Unpinned manual entries are visible in the manifest (`sha256: ""`) and in
+  `make corpus` output.

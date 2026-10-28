@@ -1,34 +1,112 @@
 """Downloading corpus PDFs and checking them against their pinned checksum."""
 
+import asyncio
+import hashlib
 from pathlib import Path
+
+import httpx
 
 from rag_hive.corpus.models import CorpusEntry
 
+_CHUNK_BYTES = 1 << 20
+"""Read and hash files in 1 MiB chunks, so large PDFs never sit in memory whole."""
 
-class ChecksumMismatchError(Exception):
+
+class CorpusError(Exception):
+    """A corpus document is missing or does not match the manifest."""
+
+
+class ChecksumMismatchError(CorpusError):
     """A file's SHA-256 differs from the one pinned in the manifest."""
+
+
+class ManualDownloadRequiredError(CorpusError):
+    """A `manual` entry's file is not in the raw directory; a person has to download it."""
+
+
+class UnpinnedChecksumError(CorpusError):
+    """A file is present but its manifest entry pins no SHA-256 yet, so it cannot be verified."""
+
+
+def document_path(entry: CorpusEntry, raw_dir: Path) -> Path:
+    """Return where `entry`'s PDF lives: `raw_dir / f"{entry.id}.pdf"`."""
+    return raw_dir / f"{entry.id}.pdf"
 
 
 def sha256_of(path: Path) -> str:
     """Return the lowercase hex SHA-256 of the file at `path`."""
-    raise NotImplementedError
+    digest = hashlib.sha256()
+    with path.open("rb") as file:
+        while chunk := file.read(_CHUNK_BYTES):
+            digest.update(chunk)
+    return digest.hexdigest()
 
 
-async def ensure_document(entry: CorpusEntry, raw_dir: Path) -> Path:
+async def ensure_document(
+    entry: CorpusEntry, raw_dir: Path, *, client: httpx.AsyncClient
+) -> tuple[Path, bool]:
     """Make sure `entry`'s PDF is in `raw_dir` with the pinned checksum.
 
-    A file already present with the right checksum is kept and not downloaded again. A
+    A file already present with the right checksum is kept and not downloaded again. A present
+    `auto` file with the wrong checksum is downloaded again; a `manual` one is an error. A
     download is written to a temporary file and only moved into place once its checksum
     matches, so `raw_dir` never holds a partial or wrong file under the final name.
 
     Args:
         entry: The manifest entry to fetch.
-        raw_dir: Directory holding the downloaded PDFs (`data/corpus/raw/`).
+        raw_dir: Directory holding the downloaded PDFs (`data/corpus/raw/`). Created if missing.
+        client: HTTP client used for `auto` downloads; it should follow redirects.
 
     Returns:
-        Path of the verified PDF, `raw_dir / f"{entry.id}.pdf"`.
+        Path of the verified PDF, `document_path(entry, raw_dir)`, and whether it was
+        downloaded by this call.
 
     Raises:
-        ChecksumMismatchError: If the downloaded bytes do not match `entry.sha256`.
+        ChecksumMismatchError: If the bytes (downloaded, or a present manual file) do not match
+            `entry.sha256`.
+        ManualDownloadRequiredError: If a `manual` entry's file is missing.
+        UnpinnedChecksumError: If a file is present but `entry.sha256` is empty.
+        httpx.HTTPError: If the download fails (network error, non-2xx status).
     """
-    raise NotImplementedError
+    path = document_path(entry, raw_dir)
+    if path.exists():
+        actual = await asyncio.to_thread(sha256_of, path)
+        if not entry.sha256:
+            msg = (
+                f"{entry.id}: {path} is present but the manifest pins no sha256 yet; "
+                f"its sha256 is {actual}"
+            )
+            raise UnpinnedChecksumError(msg)
+        if actual == entry.sha256:
+            return path, False
+        if entry.download == "manual":
+            msg = f"{entry.id}: {path} has sha256 {actual}, the manifest pins {entry.sha256}"
+            raise ChecksumMismatchError(msg)
+    elif entry.download == "manual":
+        msg = f"{entry.id}: {path} is missing; download it by hand"
+        raise ManualDownloadRequiredError(msg)
+
+    if entry.url is None:  # The model guarantees a url for auto entries.
+        msg = f"{entry.id}: an auto entry needs a url"
+        raise ValueError(msg)
+    await asyncio.to_thread(raw_dir.mkdir, parents=True, exist_ok=True)
+    partial = path.with_name(f".{path.name}.part")
+    digest = hashlib.sha256()
+    try:
+        async with client.stream("GET", str(entry.url)) as response:
+            response.raise_for_status()
+            with partial.open("wb") as file:
+                async for chunk in response.aiter_bytes(_CHUNK_BYTES):
+                    digest.update(chunk)
+                    file.write(chunk)
+        actual = digest.hexdigest()
+        if actual != entry.sha256:
+            msg = (
+                f"{entry.id}: {entry.url} served sha256 {actual}, the manifest pins "
+                f"{entry.sha256}; the source changed or the download is not the pinned version"
+            )
+            raise ChecksumMismatchError(msg)
+        partial.replace(path)
+    finally:
+        partial.unlink(missing_ok=True)
+    return path, True
