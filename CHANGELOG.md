@@ -23,6 +23,8 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
+- CI runs on `ubuntu-24.04` with every action pinned to a commit SHA; `dependabot.yml` opens
+  weekly grouped updates for GitHub Actions, uv and npm.
 - Workflow docs: issue → branch → PR with `Closes #N` → squash merge, `type:*`, `area:*` and
   `priority:*` labels plus a milestone on every issue, docs-only changes in their own PR,
   `corpus` commit scope; issue templates use the new labels.
