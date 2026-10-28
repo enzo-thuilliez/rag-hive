@@ -18,6 +18,9 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Every backend route now lives under `/api` (`/api/health`, `/api/runs/{run_id}/events`,
   `/api/runs/{run_id}/graph`, docs at `/api/docs`); the dev proxy is a single `/api` rule
   (ADR-004).
+- Local-first runtime (ADR-005): Ollama (Qwen) and BGE-M3 via sentence-transformers are the
+  only providers, the `anthropic` and `openai` SDKs and API key settings are gone; roadmap
+  rewritten around the MSCI benchmark; branch prefixes match the conventional commit types.
 
 ### Fixed
 

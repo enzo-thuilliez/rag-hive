@@ -51,7 +51,8 @@ More in [docs/architecture.md](docs/architecture.md) and [AGENTS.md](AGENTS.md).
 | Layer | Tech |
 | --- | --- |
 | API | Python 3.12, [FastAPI](https://fastapi.tiangolo.com/), pydantic-settings, [`uv`](https://docs.astral.sh/uv/) |
-| Agents | [LangGraph](https://github.com/langchain-ai/langgraph), Anthropic + OpenAI (provider-agnostic) |
+| Agents | [LangGraph](https://github.com/langchain-ai/langgraph), [Ollama](https://ollama.com/) (Qwen), local only |
+| Embeddings | [BGE-M3](https://huggingface.co/BAAI/bge-m3) via [sentence-transformers](https://sbert.net/), local only |
 | Dashboard | React, TypeScript, Vite, Tailwind, [React Flow](https://reactflow.dev/), [Recharts](https://recharts.org/) |
 | Quality | ruff, mypy `--strict`, pytest, typescript-eslint (type-aware), Prettier, Vitest, pre-commit |
 
@@ -60,7 +61,7 @@ More in [docs/architecture.md](docs/architecture.md) and [AGENTS.md](AGENTS.md).
 Requires Python 3.12 with `uv`, Node 24 with pnpm (via corepack), and `make`.
 
 ```sh
-cp .env.example .env   # add your API keys
+cp .env.example .env   # local defaults, no API keys
 make install           # uv sync, pnpm install, git hooks
 make dev               # backend on :8000 + frontend on :5173
 make lint              # ruff, eslint, prettier

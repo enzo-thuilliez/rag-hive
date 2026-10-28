@@ -45,8 +45,9 @@ Vitest, build) on every push to `main` and every PR. `ci-pass` is the required c
 
 1. Pick an issue, or open one with the Feature or Bug template. Read the issues listed under
    its Dependencies; if one is still open, the issue isn't ready.
-2. Branch from `main`: `feat/<short-slug>`, `fix/…`, `chore/…` or `docs/…`. One issue, one
-   branch, one PR.
+2. Branch from `main` as `<type>/<short-slug>`, where `<type>` is the conventional commit type
+   of the change: `feat`, `fix`, `chore`, `docs`, `refactor`, `test`, `perf` or `ci`. One
+   issue, one branch, one PR.
 3. Commit with [Conventional Commits](https://www.conventionalcommits.org/):
    `type(scope): lowercase summary`, e.g. `feat(backend): add pymupdf parser`.
    Scopes: `backend`, `frontend`, `agents`, `events`, `eval`, `docs`, `ci`, `deps`, `repo`.
@@ -71,4 +72,4 @@ apply either way.
 - `frontend/src/api/` and `schema.json` (`make schema`) when a backend wire type changes.
 - [DECISIONS.md](DECISIONS.md) for decisions with trade-offs (add an ADR).
 - [CHANGELOG.md](CHANGELOG.md) under `Unreleased` for every PR.
-- [ROADMAP.md](ROADMAP.md) checkboxes when a PR completes a roadmap item.
+- [ROADMAP.md](ROADMAP.md) when a PR completes a roadmap item (move it to `Done`).
