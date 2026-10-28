@@ -55,6 +55,7 @@ class Settings(BaseSettings):
 
     corpus_manifest_path: Path = REPO_ROOT / "data" / "corpus" / "manifest.yaml"
     corpus_raw_dir: Path = REPO_ROOT / "data" / "corpus" / "raw"
+    corpus_derived_dir: Path = REPO_ROOT / "data" / "corpus" / "derived"
     corpus_download_timeout_seconds: float = Field(default=120.0, gt=0)
     corpus_user_agent: str = "rag-hive-corpus/0.1 (+https://github.com/enzo-thuilliez/rag-hive)"
 

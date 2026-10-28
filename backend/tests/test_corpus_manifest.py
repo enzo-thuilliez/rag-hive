@@ -13,14 +13,15 @@ MANIFEST = REPO_ROOT / "data" / "corpus" / "manifest.yaml"
 def test_committed_manifest_is_valid() -> None:
     entries = load_manifest(MANIFEST)
 
-    assert len(entries) == 10
+    assert len(entries) == 11
     assert entries[0].id == "msci-gimi-methodology"
 
 
-def test_committed_manifest_pins_every_auto_entry() -> None:
+def test_committed_manifest_pins_every_source_entry() -> None:
     for entry in load_manifest(MANIFEST):
-        if entry.download == "auto":
+        if entry.download != "derived":
             assert entry.sha256, entry.id
+            assert entry.pages is not None, entry.id
             assert entry.properties is not None, entry.id
 
 
@@ -36,3 +37,13 @@ def test_duplicate_ids_are_rejected(tmp_path: Path) -> None:
 def test_missing_manifest_raises(tmp_path: Path) -> None:
     with pytest.raises(FileNotFoundError):
         load_manifest(tmp_path / "manifest.yaml")
+
+
+def test_committed_manifest_derives_the_fraser_scan_from_its_page_range() -> None:
+    by_id = {entry.id: entry for entry in load_manifest(MANIFEST)}
+    derived = by_id["frb-annual-report-1920-image-only"]
+
+    assert derived.derivation is not None
+    source = by_id[derived.derivation.source]
+    assert source.page_range is not None
+    assert len(source.selected_pages()) == derived.pages == 40

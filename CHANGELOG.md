@@ -20,6 +20,12 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Corpus: `data/corpus/manifest.yaml` pins 10 benchmark PDFs by URL and SHA-256, and
   `make corpus` downloads them to `data/corpus/raw/` (never committed), verifies every checksum
   and prints instructions for gated documents marked `download: manual` (ADR-007).
+- Corpus page ranges and derived files (ADR-008): the 1920 Federal Reserve report is cut to 40
+  representative pages, and `make corpus` generates an image-only copy of them with no text
+  layer into `data/corpus/derived/`, so OCR parsers face a true scan.
+- Corpus pinned: the NVIDIA 10-Q, the TotalEnergies URD and the three French Amundi documents
+  (factsheet, DIC, prospectus) now carry their SHA-256, pages and properties, so `make corpus`
+  verifies all 10 documents and the roadmap's Corpus step is done.
 
 ### Changed
 

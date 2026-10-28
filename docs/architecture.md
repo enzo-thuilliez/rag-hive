@@ -43,7 +43,7 @@ contracts in place but bodies that raise `NotImplementedError`; their interfaces
 | `agents/topology.py` | `RunGraph` wire types | real |
 | `events/` | `AgentEvent` schema, SSE framing, `RunEventSource` | real (empty source) |
 | `corpus/models.py` | `CorpusEntry`, `CorpusManifest`, `DocumentProperties` | real |
-| `corpus/manifest.py`, `corpus/download.py`, `corpus/__main__.py` | manifest loading, checksum-verified download, `make corpus` | real |
+| `corpus/manifest.py`, `corpus/download.py`, `corpus/derive.py`, `corpus/__main__.py` | manifest loading, checksum-verified download, image-only derived files, `make corpus` | real |
 | `evaluation/golden.py` | `GoldenQuestion`, `ExpectedPassage` (validated), golden set loading | model real, loader stub |
 | `evaluation/span_matching.py` | which retrieved chunks cover which expected passages | stub |
 | `evaluation/metrics/retrieval.py` | recall@k, hit rate@k, MRR, nDCG@k, `RetrievalScores` | stub |
@@ -88,6 +88,13 @@ validate the corpus manifest and golden sets. A test fails if they are stale.
 | `auto` | kept | downloaded again | downloaded, kept only if the checksum matches |
 | `manual`, pinned | kept | error | instructions printed, error |
 | `manual`, `sha256: ""` | error, prints the file's checksum to pin | same | instructions printed, error |
+
+`derived` entries come after their sources. `make corpus` renders the source's selected pages
+(`page_range`) into an image-only PDF in `data/corpus/derived/<id>.pdf` (gitignored), with
+pypdfium2 for rendering and Pillow for writing. A derived file has no pinned checksum, since its
+bytes depend on the rasterizer's version. Instead it records its source checksum, pages and dpi
+in its PDF `Keywords`, and it is generated again whenever that record no longer matches the
+manifest. It fails if its source is missing or does not match its pin.
 
 It exits 1 if any entry is not ready. Downloads go to a temporary file first, so a failed or
 mismatched download never leaves a file under the final name. CI validates the manifest

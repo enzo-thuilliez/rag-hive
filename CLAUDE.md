@@ -11,9 +11,9 @@ at runtime (ADR-005). Claude Code is a dev tool here, not a runtime dependency. 
 [README.md](README.md) for the pitch. See [AGENTS.md](AGENTS.md) for the agent workflow, the
 event contract and the coding-agent workflow. Treat AGENTS.md as the spec.
 
-**Current stage: scaffolding done, corpus in progress, see [ROADMAP.md](ROADMAP.md).** Every
-planned module exists as a typed stub: models, interfaces and docstrings, with bodies that raise
-`NotImplementedError` (module map in [docs/architecture.md](docs/architecture.md#module-map)).
+**Current stage: scaffolding and corpus done, golden set next, see [ROADMAP.md](ROADMAP.md).**
+Every planned module exists as a typed stub: models, interfaces and docstrings, with bodies that
+raise `NotImplementedError` (module map in [docs/architecture.md](docs/architecture.md#module-map)).
 The registries, the event schema, the endpoints and the workflow wiring are real; no parser,
 chunker, embedder, retriever, LLM, agent or metric logic is. Check before calling a function as
 if it works. Stub signatures are frozen: changing one needs an ADR (ADR-006).
@@ -40,7 +40,8 @@ A monorepo with two independent projects:
     `state.py` (`WorkflowState`), `graph.py` (the topology, the `StateGraph` and the `RunGraph`
     served to the dashboard), `topology.py` (`RunGraph` wire types).
   - `corpus/`: `CorpusEntry` / `CorpusManifest`, manifest loading, the checksum-verified
-    downloader and `python -m rag_hive.corpus` (`make corpus`).
+    downloader, image-only derived files (`derive.py`) and `python -m rag_hive.corpus`
+    (`make corpus`).
   - `evaluation/`: `golden.py` (`GoldenQuestion`), `span_matching.py`, `metrics/retrieval.py`,
     `metrics/parsing.py`.
   - `schema.py`: `make schema` exports wire types to `frontend/src/api/schema.json` and the

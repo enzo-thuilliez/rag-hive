@@ -177,7 +177,7 @@ def test_sync_reports_every_problem_and_the_manual_instructions(
 
     async def run() -> bool:
         async with httpx.AsyncClient(transport=httpx.MockTransport(handler)) as client:
-            return await sync_corpus(entries, tmp_path, client)
+            return await sync_corpus(entries, tmp_path, tmp_path / "derived", client)
 
     with caplog.at_level(logging.INFO, logger="rag_hive.corpus"):
         ok = asyncio.run(run())
@@ -196,6 +196,7 @@ def test_sync_succeeds_when_every_file_is_ready(tmp_path: Path) -> None:
 
     async def run() -> bool:
         async with httpx.AsyncClient(transport=httpx.MockTransport(handler)) as client:
-            return await sync_corpus([auto_entry(), manual_entry()], tmp_path, client)
+            entries = [auto_entry(), manual_entry()]
+            return await sync_corpus(entries, tmp_path, tmp_path / "derived", client)
 
     assert asyncio.run(run())

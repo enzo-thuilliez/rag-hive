@@ -80,7 +80,8 @@ right to redistribute them. `make corpus` downloads them to `data/corpus/raw/` (
 refuses any file whose checksum differs from the manifest, and skips files already present.
 A few sources sit behind a disclaimer or block automated downloads; for those, `make corpus`
 prints where to download the file by hand and where to save it, then verifies it on the next
-run.
+run. It also generates derived files, such as an image-only copy of the scanned 1920 report
+with no text layer, into `data/corpus/derived/` (gitignored too).
 
 ## Repository layout
 
