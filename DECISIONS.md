@@ -75,3 +75,23 @@ ones, supersede them instead.
   model downloads; CPU-only machines run slower. Local models grade and generate less well
   than hosted ones, so the Judge's LLM grades need calibration. Adding a hosted provider later
   means a new ADR that supersedes this one.
+
+## ADR-006: Interfaces are frozen early; changing one takes a new ADR
+
+- **Status:** accepted (2026-10-28)
+- **Context:** The pipeline components, the LLM provider, the agents, the corpus manifest and
+  the evaluation code will be filled in over many PRs, often by coding agents working in
+  parallel. If each PR adjusts the interfaces it touches, the pieces stop fitting together and
+  benchmark results stop being comparable across PRs.
+- **Decision:** Every planned module exists now as a typed stub: Pydantic models, ABCs and
+  function signatures with Google-style docstrings stating the contract, and bodies that raise
+  `NotImplementedError`. Those signatures, model fields and docstring contracts are frozen.
+  An implementation PR fills in bodies and may add private helpers, new registered
+  implementations, or optional config fields with defaults. Removing or renaming a field,
+  changing a signature or a documented behaviour (a metric's definition, a model's
+  validation rule) needs a new ADR in the same PR that says what changes and why, and the
+  matching update to AGENTS.md, `make schema` output and tests.
+- **Consequences:** Implementation PRs stay small and parallel, and the architecture is
+  readable before it works. A wrong early guess costs an ADR rather than a quiet edit, which is
+  the point: the change is recorded. Stubs that turn out to be unneeded are removed the same
+  way.

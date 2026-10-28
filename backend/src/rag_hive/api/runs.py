@@ -6,7 +6,8 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, Header, HTTPException, status
 from fastapi.responses import StreamingResponse
 
-from rag_hive.agents.topology import RunGraph, build_run_graph
+from rag_hive.agents.graph import build_run_graph
+from rag_hive.agents.topology import RunGraph
 from rag_hive.events.source import RunEventSource, get_event_source
 from rag_hive.events.sse import format_sse
 

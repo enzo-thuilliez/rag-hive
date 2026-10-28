@@ -4,8 +4,8 @@ This file has two parts: the contract for RAG Hive's own agents and events, then
 workflow for coding agents (Claude Code, Codex, Cursor...) working on this repo. Humans: the
 same workflow is in [CONTRIBUTING.md](CONTRIBUTING.md).
 
-> Status: contract only. The event schema, the graph topology and the component interfaces
-> exist in code; no agent does.
+> Status: contract and typed stubs. The event schema, the workflow graph, the component
+> interfaces and every agent's input/output models exist in code; no agent logic does.
 
 **Language:** everything in this repository is written in English (docs, code, comments,
 docstrings, commit messages, event text, error messages), even when the person asking for the
@@ -26,9 +26,16 @@ Profiler → Planner → QA Generator → Workers (parallel) → Judge → Repor
 | Judge | All worker outputs | Retrieval and answer scores per config |
 | Reporter | Scores | Ranking and summary for the dashboard |
 
-The static topology is served by `GET /api/runs/{run_id}/graph`
-([`agents/topology.py`](backend/src/rag_hive/agents/topology.py)). The `worker` node is a
-template; actual workers are created at runtime.
+Each agent module in [`agents/`](backend/src/rag_hive/agents/) defines its input model (the
+`WorkflowState` keys it reads), its output model, a `run_*` function and a LangGraph node that
+returns only the keys it writes. Workers get their `WorkerInput` through LangGraph's `Send`, one
+per config, and append to `worker_outputs`. Questions use the golden-set format
+(`GoldenQuestion`) whether they come from the golden set or the LLM.
+
+The topology is declared once in [`agents/graph.py`](backend/src/rag_hive/agents/graph.py):
+`build_workflow` wires the LangGraph `StateGraph` from it and `GET /api/runs/{run_id}/graph`
+serves it, so the agent map matches the graph that runs. The `worker` node is a template;
+actual workers are created at runtime.
 
 ### Design principles
 

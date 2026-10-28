@@ -9,10 +9,11 @@ frontend (Vite dev server :5173)          backend (uvicorn :8000)
 │        Results               │  /api/*  │   health.py                           │
 │ api/client.ts                │ ───────► │   runs.py ── events/source.py         │
 │ api/events.ts, api/graph.ts  │          │    │         (RunEventSource)         │
-└──────────────────────────────┘  (proxy) │    └── agents/topology.py             │
-                                          │ agents/ (LangGraph, to come)          │
-                                          │   uses parsers/ chunkers/ embedders/  │
-                                          │        retrievers/ evaluation/        │
+└──────────────────────────────┘  (proxy) │    └── agents/graph.py                │
+                                          │ agents/ (LangGraph workflow, stubs)   │
+                                          │   uses llm/ parsers/ chunkers/        │
+                                          │        embedders/ retrievers/         │
+                                          │        corpus/ evaluation/            │
                                           └───────────────────────────────────────┘
 ```
 
@@ -20,6 +21,62 @@ Every backend route, the OpenAPI docs included, lives under `/api`; every other 
 the frontend ([ADR-004](../DECISIONS.md#adr-004-every-backend-route-lives-under-api)). In dev,
 Vite proxies `/api` to the backend, so the browser stays same-origin. In production the same
 split lets one origin serve both. Ports and hosts come from the root `.env`.
+
+## Module map
+
+Every module below exists. Those marked *stub* have their models, signatures and docstring
+contracts in place but bodies that raise `NotImplementedError`; their interfaces are frozen
+([ADR-006](../DECISIONS.md#adr-006-interfaces-are-frozen-early-changing-one-takes-a-new-adr)).
+
+| Module (`backend/src/rag_hive/`) | Role | State |
+| --- | --- | --- |
+| `config.py` | `Settings`: every tunable value, from env / `.env` | real |
+| `core/wire.py`, `core/data.py` | `WireModel` (camelCase, frontend) and `DataModel` (snake_case, files and agent state) | real |
+| `core/models.py` | `ParsedDocument`, `Chunk`, `ScoredChunk`: data between pipeline stages | real |
+| `core/component.py`, `core/registry.py` | `Component` base and name → class `Registry` | real |
+| `parsers/`, `chunkers/`, `retrievers/` | async ABC + registry each | interfaces, no implementation |
+| `embedders/` | `Embedder` ABC + registry; `sentence_transformer.py`, BGE-M3 by default | stub |
+| `llm/` | `LLMProvider` ABC, `llm_registry`, `create_llm`; `ollama.py` is the only provider | stub |
+| `agents/profiler.py` … `agents/reporter.py` | per agent: input model, output model, `run_*`, LangGraph node | stub |
+| `agents/state.py` | `WorkflowState`, the LangGraph state | real |
+| `agents/graph.py` | topology table, `build_workflow` (`StateGraph`), `build_run_graph` (dashboard) | real, except `fan_out_workers` |
+| `agents/topology.py` | `RunGraph` wire types | real |
+| `events/` | `AgentEvent` schema, SSE framing, `RunEventSource` | real (empty source) |
+| `corpus/models.py` | `CorpusEntry`, `DocumentProperties` | real |
+| `corpus/manifest.py`, `corpus/download.py` | manifest loading, checksum-verified download | stub |
+| `evaluation/golden.py` | `GoldenQuestion`, `ExpectedPassage` (validated), golden set loading | model real, loader stub |
+| `evaluation/span_matching.py` | which retrieved chunks cover which expected passages | stub |
+| `evaluation/metrics/retrieval.py` | recall@k, hit rate@k, MRR, nDCG@k, `RetrievalScores` | stub |
+| `evaluation/metrics/parsing.py` | normalized edit distance, TEDS | stub |
+| `api/` | the `/api` router | real |
+| `schema.py` | `make schema`: wire schema to the frontend, data schemas to `docs/schemas/` | real |
+
+### Workflow data flow
+
+```text
+WorkflowState(run_id, document_id, pdf_path, ks, golden_set)
+  → profiler      reads ProfilerInput      writes profile: DocumentProfile
+  → planner       reads PlannerInput       writes plan: Plan (PipelineConfig list)
+  → qa_generator  reads QAGeneratorInput   writes question_set: QuestionSet (GoldenQuestion list)
+  → worker × N    gets WorkerInput (Send)  appends worker_outputs: WorkerOutput
+  → judge         reads JudgeInput         writes scores: Scores (RetrievalScores per config)
+  → reporter      reads ReporterInput      writes report: Report
+```
+
+Each node receives only its input model (LangGraph `input_schema`) and returns only the keys it
+writes, so agent modules never import `WorkflowState`.
+
+### Evaluation without chunk labels
+
+The golden set stores expected passages as verbatim text with a page, not chunk ids.
+`span_matching.match_spans` decides which retrieved chunks cover which passages, and the
+retrieval metrics work on that coverage, so every chunker is scored against the same labels.
+
+### Data schemas
+
+`make schema` writes `docs/schemas/corpus-entry.schema.json` and
+`docs/schemas/golden-question.schema.json` from the Pydantic models, for editors and other tools
+that validate the corpus manifest and golden sets. A test fails if they are stale.
 
 ## Endpoints
 

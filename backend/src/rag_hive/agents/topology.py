@@ -1,8 +1,9 @@
-"""Static topology of the agent workflow, served to the dashboard's agent map.
+"""Wire types of the agent map served at `GET /api/runs/{run_id}/graph`.
 
-Nodes are agent roles, not instances: the `worker` node is a template, and each worker the
-Planner spawns appears at runtime through events whose `parent_instance_id` points at its
-spawner (see `rag_hive.events.schema.BaseEvent`).
+The nodes and edges themselves are declared in `rag_hive.agents.graph`, next to the LangGraph
+workflow built from them. Nodes are agent roles, not instances: the `worker` node is a
+template, and each worker the Planner spawns appears at runtime through events whose
+`parent_instance_id` points at its spawner (see `rag_hive.events.schema.BaseEvent`).
 """
 
 from typing import Literal
@@ -40,33 +41,3 @@ class RunGraph(WireModel):
     run_id: str
     nodes: list[GraphNode]
     edges: list[GraphEdge]
-
-
-_NODES: tuple[GraphNode, ...] = (
-    GraphNode(id=AgentName.PROFILER, agent=AgentName.PROFILER, label="Profiler"),
-    GraphNode(id=AgentName.PLANNER, agent=AgentName.PLANNER, label="Planner"),
-    GraphNode(id=AgentName.QA_GENERATOR, agent=AgentName.QA_GENERATOR, label="QA Generator"),
-    GraphNode(id=AgentName.WORKER, agent=AgentName.WORKER, label="Workers", dynamic=True),
-    GraphNode(id=AgentName.JUDGE, agent=AgentName.JUDGE, label="Judge"),
-    GraphNode(id=AgentName.REPORTER, agent=AgentName.REPORTER, label="Reporter"),
-)
-
-_EDGES: tuple[tuple[AgentName, AgentName, EdgeKind], ...] = (
-    (AgentName.PROFILER, AgentName.PLANNER, "handoff"),
-    (AgentName.PLANNER, AgentName.QA_GENERATOR, "handoff"),
-    (AgentName.QA_GENERATOR, AgentName.WORKER, "fan_out"),
-    (AgentName.WORKER, AgentName.JUDGE, "fan_in"),
-    (AgentName.JUDGE, AgentName.REPORTER, "handoff"),
-)
-
-
-def build_run_graph(run_id: str) -> RunGraph:
-    """Return the workflow graph for `run_id`. The same for every run until the Planner exists."""
-    return RunGraph(
-        run_id=run_id,
-        nodes=list(_NODES),
-        edges=[
-            GraphEdge(id=f"{source}->{target}", source=source, target=target, kind=kind)
-            for source, target, kind in _EDGES
-        ],
-    )
