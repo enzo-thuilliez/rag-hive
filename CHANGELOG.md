@@ -17,6 +17,9 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   LLM provider, the BGE-M3 embedder, `CorpusEntry`, `GoldenQuestion`, span matching and the
   retrieval and parsing metrics. `make schema` also exports the corpus and golden question
   schemas to `docs/schemas/`.
+- Corpus: `data/corpus/manifest.yaml` pins 10 benchmark PDFs by URL and SHA-256, and
+  `make corpus` downloads them to `data/corpus/raw/` (never committed), verifies every checksum
+  and prints instructions for gated documents marked `download: manual` (ADR-007).
 
 ### Changed
 
