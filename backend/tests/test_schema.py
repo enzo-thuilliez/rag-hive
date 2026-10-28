@@ -1,7 +1,7 @@
 from datetime import UTC, datetime
 
 from rag_hive.events.schema import AgentName, HandoffEvent, agent_event_adapter
-from rag_hive.schema import SCHEMA_PATH, render_wire_schema
+from rag_hive.schema import SCHEMA_PATH, render_data_schemas, render_wire_schema
 
 
 def test_event_round_trips_through_camel_case_json() -> None:
@@ -25,3 +25,9 @@ def test_committed_schema_is_up_to_date() -> None:
     assert SCHEMA_PATH.read_text(encoding="utf-8") == render_wire_schema(), (
         "frontend/src/api/schema.json is stale: run `make schema`"
     )
+
+
+def test_committed_data_schemas_are_up_to_date() -> None:
+    for path, content in render_data_schemas().items():
+        stale = f"{path.name} is stale: run `make schema`"
+        assert path.read_text(encoding="utf-8") == content, stale
