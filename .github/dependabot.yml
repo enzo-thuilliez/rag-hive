@@ -1,5 +1,7 @@
-# Weekly version updates, one grouped PR per ecosystem. Security updates are a repo setting and
-# run on their own schedule. Commit messages stay conventional: `ci(deps): …`, `chore(deps): …`.
+# Weekly version updates. Each ecosystem's group takes minor and patch bumps only, in one PR;
+# a semver-major bump falls out of the group and comes as its own PR, reviewed by hand.
+# Security updates are a repo setting and run on their own schedule. Commit messages stay
+# conventional: `ci(deps): …`, `chore(deps): …`.
 version: 2
 updates:
   - package-ecosystem: github-actions
@@ -9,6 +11,7 @@ updates:
     groups:
       github-actions:
         patterns: ["*"]
+        update-types: [minor, patch]
     commit-message:
       prefix: ci
       include: scope
@@ -21,6 +24,7 @@ updates:
     groups:
       backend:
         patterns: ["*"]
+        update-types: [minor, patch]
     commit-message:
       prefix: chore
       include: scope
@@ -33,6 +37,13 @@ updates:
     groups:
       frontend:
         patterns: ["*"]
+        update-types: [minor, patch]
+    ignore:
+      # typescript-eslint 8.72 declares `typescript: ">=4.8.4 <6.1.0"` and lint fails on newer
+      # TypeScript ("typescript-eslint does not support TS 7.0", PR #55). Lift this once
+      # typescript-eslint supports the new version, and bump both in one PR.
+      - dependency-name: typescript
+        versions: [">=6.1"]
     commit-message:
       prefix: chore
       include: scope
