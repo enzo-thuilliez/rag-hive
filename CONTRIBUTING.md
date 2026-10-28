@@ -71,4 +71,4 @@ apply either way.
 - `frontend/src/api/` and `schema.json` (`make schema`) when a backend wire type changes.
 - [DECISIONS.md](DECISIONS.md) for decisions with trade-offs (add an ADR).
 - [CHANGELOG.md](CHANGELOG.md) under `Unreleased` for every PR.
-- [ROADMAP.md](ROADMAP.md) checkboxes when a PR completes a roadmap item.
+- [ROADMAP.md](ROADMAP.md) when a PR completes a roadmap item (move it to `Done`).

@@ -33,7 +33,7 @@ split lets one origin serve both. Ports and hosts come from the root `.env`.
 ## Event stream
 
 The endpoint reads from a `RunEventSource` (a FastAPI dependency). The default
-`EmptyEventSource` yields nothing, so the stream closes immediately. Phase 2 replaces it with
+`EmptyEventSource` yields nothing, so the stream closes immediately. The agents step replaces it with
 an event bus the agents publish to, which must replay events after a given `seq`. See
 [ADR-002](../DECISIONS.md#adr-002-sse-with-seq-ids-for-the-event-stream).
 
