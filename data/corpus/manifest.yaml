@@ -1,0 +1,170 @@
+# yaml-language-server: $schema=../../docs/schemas/corpus-manifest.schema.json
+#
+# Benchmark corpus: 10 PDFs, each pinned to an exact version by URL (or source page) and SHA-256.
+#
+# The PDFs are NOT in this repository and must never be committed: we have no right to
+# redistribute them. `make corpus` downloads each `auto` entry to data/corpus/raw/<id>.pdf
+# (gitignored), refuses any file whose SHA-256 differs from the pinned one, and skips files
+# already present and valid. `manual` entries sit behind a login, cookie wall, disclaimer or bot
+# block: download them yourself from `source_page` following `instructions`, save them as
+# data/corpus/raw/<id>.pdf, and `make corpus` verifies them. A manual entry with an empty
+# `sha256` is not pinned yet; `pages` and `properties` are filled once someone has inspected it.
+#
+# Fields: see CorpusEntry in backend/src/rag_hive/corpus/models.py (ADR-007).
+# `properties` were filled by inspecting each PDF (pdfinfo, pdffonts, pdfimages, pdftotext and
+# rendered pages), not from the publisher's description.
+
+documents:
+  - id: msci-gimi-methodology
+    title: MSCI Global Investable Market Indexes Methodology (March 2026)
+    publisher: MSCI
+    url: https://support.msci.com/documents/10199/838d068c-7bac-8b96-03f6-6b2fe1067254
+    sha256: 8147890bb504e2eff5941a7e4d38309ed9cbd5488d3fdcea1d2c8c3f050cc996
+    pages: 191
+    language: en
+    properties:
+      tables: true # worked examples of size-segment rankings, market classification tables
+      images: true # flow diagrams of the index construction (p. 22, p. 128)
+      multi_column: false
+      scanned: false
+      formulas: true # market capitalization and free-float formulas
+    notes: >-
+      First benchmark target. Pinned to the March 2026 edition on MSCI's support site, a
+      versioned link. The "latest" link (msci.com/index/methodology/latest/GIMI) served the
+      2026-10-15 edition (195 pages) when this was written and changes with every quarterly
+      review, so it is not used.
+
+  - id: nvidia-10q-q2-fy2027
+    title: NVIDIA Form 10-Q, quarter ended July 26, 2026 (Q2 fiscal 2027)
+    publisher: NVIDIA Corporation
+    download: manual
+    source_page: https://investor.nvidia.com/financial-info/sec-filings/default.aspx
+    instructions: >-
+      Download the PDF of the Form 10-Q for the quarter ended July 26, 2026 (filed 2026-08-26).
+    sha256: ""
+    language: en
+    notes: >-
+      No direct PDF link found: SEC EDGAR serves this filing as HTML only (accession
+      0001045810-26-000075), and the investor site renders its file list with JavaScript.
+
+  - id: nvidia-q3-fy2026-presentation
+    title: NVIDIA Investor Presentation, Q3 fiscal 2026 (November 2025)
+    publisher: NVIDIA Corporation
+    url: https://s201.q4cdn.com/141608511/files/doc_financials/2026/q3/NVDA-F3Q26-Quarterly-Presentation.pdf
+    sha256: 4eb8cc20423be7df0c02c69e85eb7a50607b441a3d44a0da82e77acfd1d9d1dd
+    pages: 17
+    language: en
+    properties:
+      tables: true # GAAP to non-GAAP reconciliation tables (pp. 13-16)
+      images: true # revenue and margin bar charts
+      multi_column: false
+      scanned: false
+      formulas: false
+    notes: >-
+      Slide deck (16:9 pages, about 560 characters per page): little text, most facts in charts.
+      The most recent quarterly deck with a direct link on NVIDIA's own CDN when this was
+      written.
+
+  - id: totalenergies-urd-2025
+    title: TotalEnergies Document d'enregistrement universel 2025
+    publisher: TotalEnergies SE
+    download: manual
+    source_page: https://totalenergies.com/fr/actionnaires/publications-et-informations-reglementees/informations-reglementees/rapports-annuels
+    instructions: >-
+      Download « Document d'enregistrement universel 2025 (incluant le rapport financier
+      annuel) », PDF version, in French.
+    sha256: ""
+    language: fr
+    notes: >-
+      French on purpose (multilingual retrieval). totalenergies.com answers automated requests
+      with HTTP 403. Filed with the AMF on 2026-03-27.
+
+  - id: amundi-msci-world-factsheet
+    title: Amundi Core MSCI World UCITS ETF Acc, monthly factsheet
+    publisher: Amundi Asset Management
+    download: manual
+    source_page: https://www.amundietf.com/
+    instructions: >-
+      Accept the investor-profile disclaimer, open ISIN IE000BI8OT95, and download the latest
+      monthly factsheet in English from Documents.
+    sha256: ""
+    language: en
+    notes: >-
+      amundietf.com shows a profile and disclaimer gate before any document. Factsheets are
+      monthly: record the edition date in the title when pinning.
+
+  - id: amundi-msci-world-kid
+    title: Amundi Core MSCI World UCITS ETF Acc, PRIIPs Key Information Document
+    publisher: Amundi Asset Management
+    download: manual
+    source_page: https://www.amundietf.com/
+    instructions: >-
+      Accept the investor-profile disclaimer, open ISIN IE000BI8OT95, and download the PRIIPs
+      KID in English from Documents.
+    sha256: ""
+    language: en
+    notes: Same ETF as the factsheet. Same disclaimer gate.
+
+  - id: amundi-msci-world-prospectus
+    title: Amundi Core MSCI World UCITS ETF Acc, UCITS prospectus
+    publisher: Amundi Asset Management
+    download: manual
+    source_page: https://www.amundietf.com/
+    instructions: >-
+      Accept the investor-profile disclaimer, open ISIN IE000BI8OT95, and download the
+      prospectus in English from Documents.
+    sha256: ""
+    language: en
+    notes: >-
+      Same ETF as the factsheet and KID, so questions can span the three documents. Same
+      disclaimer gate.
+
+  - id: ecb-economic-bulletin-2026-06
+    title: ECB Economic Bulletin, Issue 6 / 2026
+    publisher: European Central Bank
+    url: https://www.ecb.europa.eu/pub/pdf/ecbu/eb202606.en.pdf
+    sha256: dce104a6108c33a97f1fa86648794a1287016b189b1631f82b9e635ef3f9d520
+    pages: 157
+    language: en
+    properties:
+      tables: true
+      images: true # charts throughout the economic developments sections and boxes
+      multi_column: false
+      scanned: false
+      formulas: false # only index notation such as "2020 = 100"
+    notes: Published September 2026.
+
+  - id: arxiv-ff-multifactor-instability
+    title: "Time Instability of the Fama-French Multifactor Models: An International Evidence"
+    publisher: arXiv (Moriya and Noda), 2208.01270v3
+    url: https://arxiv.org/pdf/2208.01270v3
+    sha256: 02e4fe90b00a47b2daddedcf183adab5fb5ac3a615bff53769450b9161322b40
+    pages: 48
+    language: en
+    properties:
+      tables: true # ten result tables
+      images: true # time-varying risk premium figures, vector graphics
+      multi_column: false
+      scanned: false
+      formulas: true # FF3 and FF5 regression and pricing equations, LaTeX-typeset
+    notes: >-
+      Pinned to arXiv version v3 (June 2024). The figures are vector drawings, so a raster image
+      extractor finds none. File size is about 37 MB.
+
+  - id: frb-annual-report-1920
+    title: Seventh Annual Report of the Federal Reserve Board, covering operations for 1920
+    publisher: Federal Reserve Board (via FRASER, Federal Reserve Bank of St. Louis)
+    url: https://fraser.stlouisfed.org/files/docs/publications/arfr/1920s/arfr_1920.pdf
+    sha256: 7a557753e1febab53d92d2f7aaf315168686d76f7090e8a7594e2e4265cf1665
+    pages: 645
+    language: en
+    properties:
+      tables: true # statistical exhibits and balance sheets
+      images: true # a section of charts
+      multi_column: false
+      scanned: true
+      formulas: false
+    notes: >-
+      Scanned in 2009: one page image per page with an invisible OCR text layer added by FRASER.
+      A text-layer parser reads that OCR; an OCR parser reads the images again, so this
+      document compares the two. Public domain (US government work).

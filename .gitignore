@@ -16,8 +16,12 @@ frontend/.vite/
 *.tsbuildinfo
 
 # --- Local data (benchmark PDFs, indexes, results) ---
+# Only the corpus manifest is committed. PDFs (data/corpus/raw/) never are: redistribution rights.
 data/*
 !data/.gitkeep
+!data/corpus/
+data/corpus/*
+!data/corpus/manifest.yaml
 
 # --- Env / secrets ---
 .env
