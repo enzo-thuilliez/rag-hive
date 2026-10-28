@@ -97,7 +97,13 @@ non-integer `Last-Event-ID` returns 400.
 ## Workflow for coding agents
 
 - **Never commit or push to `main`.** One issue → one branch (`<type>/<short-slug>`, `<type>`
-  one of `feat`, `fix`, `chore`, `docs`, `refactor`, `test`, `perf`, `ci`) → one PR. CI green, then squash merge by the product owner.
+  one of `feat`, `fix`, `chore`, `docs`, `refactor`, `test`, `perf`, `ci`) → one PR with
+  `Closes #N` → CI green → squash merge by the product owner. Once CI is green, stop: never
+  merge, enable auto-merge or approve your own PR.
+- **Issues**: every issue has one `type:*` label, one or more `area:*` labels, one
+  `priority:p0|p1|p2` label and the milestone of its roadmap step. A PR with no issue gets one
+  first.
+- **Docs-only changes** go in their own small PR, never mixed into a code PR.
 - **Start**: read the issue, every issue in its Dependencies, and the AGENTS.md / DECISIONS.md
   sections it cites. If a dependency is still open, stop and say so.
 - **Scope**: anything not in the issue's Acceptance goes under "Left for later" in the PR
@@ -105,7 +111,8 @@ non-integer `Last-Event-ID` returns 400.
 - **PR body**: first line `Closes #N`, or `Part of #N` when the PR is one step. Then What, How,
   Tests, Left for later.
 - **Commits**: conventional, `type(scope): lowercase summary`, checked by the commit-msg hook.
-  Scopes: `backend`, `frontend`, `agents`, `events`, `eval`, `docs`, `ci`, `deps`, `repo`.
+  Scopes: `backend`, `frontend`, `agents`, `events`, `eval`, `corpus`, `docs`, `ci`, `deps`,
+  `repo`.
 - **CHANGELOG**: one bullet under `Unreleased` in [CHANGELOG.md](CHANGELOG.md), added in its
   own last commit. Never edit existing bullets.
 - **Conflicts**: merge `main` into the branch. Never rebase, never force push (denied by

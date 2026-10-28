@@ -44,20 +44,27 @@ Vitest, build) on every push to `main` and every PR. `ci-pass` is the required c
 ## Workflow
 
 1. Pick an issue, or open one with the Feature or Bug template. Read the issues listed under
-   its Dependencies; if one is still open, the issue isn't ready.
+   its Dependencies; if one is still open, the issue isn't ready. Every issue has one `type:*`
+   label, one or more `area:*` labels, one `priority:p0|p1|p2` label and the milestone of its
+   [roadmap](ROADMAP.md) step.
 2. Branch from `main` as `<type>/<short-slug>`, where `<type>` is the conventional commit type
    of the change: `feat`, `fix`, `chore`, `docs`, `refactor`, `test`, `perf` or `ci`. One
    issue, one branch, one PR.
 3. Commit with [Conventional Commits](https://www.conventionalcommits.org/):
    `type(scope): lowercase summary`, e.g. `feat(backend): add pymupdf parser`.
-   Scopes: `backend`, `frontend`, `agents`, `events`, `eval`, `docs`, `ci`, `deps`, `repo`.
+   Scopes: `backend`, `frontend`, `agents`, `events`, `eval`, `corpus`, `docs`, `ci`, `deps`,
+   `repo`.
 4. Add one bullet under `Unreleased` in [CHANGELOG.md](CHANGELOG.md), in its own last commit.
    Never edit existing bullets.
 5. Before pushing: `make lint`, `make typecheck`, `make test`.
 6. Open a PR against `main` using the template. Its first line is `Closes #N` (or
    `Part of #N` when the PR is one step of the issue).
 7. If `main` moved, merge it into your branch. Never rebase, never force push.
-8. Once CI is green, the product owner squash-merges. Nobody pushes to `main` directly.
+8. Once CI is green, the product owner squash-merges (the only merge method; the PR title
+   becomes the commit message). Nobody pushes to `main` directly: a ruleset requires a PR and
+   the `ci-pass` check, and blocks force pushes and branch deletion.
+
+Docs-only changes go in their own small PR, never mixed into a code PR.
 
 ## Using Claude Code
 
