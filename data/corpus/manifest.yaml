@@ -45,13 +45,21 @@ documents:
     download: manual
     source_page: https://investor.nvidia.com/financial-info/sec-filings/default.aspx
     instructions: >-
-      Download the PDF of the Form 10-Q for the quarter ended July 26, 2026 (filed 2026-08-26).
-    sha256: ""
+      Download the PDF of the Form 10-Q for the quarter ended July 26, 2026 (filed 2026-08-26),
+      the version including exhibits.
+    sha256: 6b5a8dc1ed21e8b2b960fd0de97103af6a2f32ccc8dd91b363f06ea192ecfebd
+    pages: 61
     language: en
+    properties:
+      tables: true # condensed financial statements and segment tables
+      images: false # only the cover logo
+      multi_column: false
+      scanned: false
+      formulas: false
     notes: >-
-      No direct PDF link found: SEC EDGAR serves this filing as HTML only (accession
-      0001045810-26-000075), and the investor site renders its file list with JavaScript.
-
+      Pinned file: "NVDA-2027-Q2-10Q-Final-including-exhibits.pdf" from NVIDIA's investor site
+      (Workiva export, 2026-08-27). SEC EDGAR serves the same filing as HTML only (accession
+      0001045810-26-000075).
   - id: nvidia-q3-fy2026-presentation
     title: NVIDIA Investor Presentation, Q3 fiscal 2026 (November 2025)
     publisher: NVIDIA Corporation
@@ -78,52 +86,78 @@ documents:
     instructions: >-
       Download « Document d'enregistrement universel 2025 (incluant le rapport financier
       annuel) », PDF version, in French.
-    sha256: ""
+    sha256: 64d55f8e6ca559e6c9383189ac9cd68254df1bc94200f40adea7ce1a5b7d4da5
+    pages: 666
     language: fr
+    properties:
+      tables: true # financial statements, governance and ESG indicator tables throughout
+      images: true # photos, maps and charts in the integrated report
+      multi_column: true # two- and three-column layouts (e.g. board member pages)
+      scanned: false
+      formulas: false
     notes: >-
-      French on purpose (multilingual retrieval). totalenergies.com answers automated requests
-      with HTTP 403. Filed with the AMF on 2026-03-27.
-
+      French on purpose (multilingual retrieval). Filed with the AMF on 2026-03-27. The pinned
+      file ("totalenergies_document-enregistrement-universel-2025_2026_fr.pdf") was produced by
+      iLovePDF on 2026-09-22, so it is a re-processed copy: a fresh download may differ in bytes
+      and fail the checksum. totalenergies.com answers automated requests with HTTP 403.
   - id: amundi-msci-world-factsheet
-    title: Amundi Core MSCI World UCITS ETF Acc, monthly factsheet
+    title: Amundi Core MSCI World UCITS ETF Acc, reporting mensuel au 30/09/2026
     publisher: Amundi Asset Management
     download: manual
     source_page: https://www.amundietf.com/
     instructions: >-
-      Accept the investor-profile disclaimer, open ISIN IE000BI8OT95, and download the latest
-      monthly factsheet in English from Documents.
-    sha256: ""
-    language: en
+      Accept the investor-profile disclaimer, open ISIN IE000BI8OT95, and download the French
+      monthly factsheet ("Reporting mensuel") dated 30/09/2026 from Documents.
+    sha256: be225426c7d9c502ac2a78d96b46c6145620122d055eccef251aed5451dddef3
+    pages: 4
+    language: fr
+    properties:
+      tables: true # performance and risk indicator tables
+      images: true # performance chart against the index
+      multi_column: true # chart and indicator panels side by side
+      scanned: false
+      formulas: false
     notes: >-
-      amundietf.com shows a profile and disclaimer gate before any document. Factsheets are
-      monthly: record the edition date in the title when pinning.
-
+      Dense marketing layout in four pages. amundietf.com shows a profile and disclaimer gate
+      before any document.
   - id: amundi-msci-world-kid
-    title: Amundi Core MSCI World UCITS ETF Acc, PRIIPs Key Information Document
+    title: Amundi Core MSCI World UCITS ETF Acc, Document d'informations clés (DIC PRIIPs) du 28/04/2026
     publisher: Amundi Asset Management
     download: manual
     source_page: https://www.amundietf.com/
     instructions: >-
-      Accept the investor-profile disclaimer, open ISIN IE000BI8OT95, and download the PRIIPs
-      KID in English from Documents.
-    sha256: ""
-    language: en
+      Accept the investor-profile disclaimer, open ISIN IE000BI8OT95, and download the French
+      PRIIPs KID ("DIC") dated 28/04/2026 from Documents.
+    sha256: 025748121b02af75f7dc8fd323383240a8ee919f4469921c1337ae6d21146a1c
+    pages: 3
+    language: fr
+    properties:
+      tables: true # performance scenarios and costs over time
+      images: true # the 1-7 summary risk indicator scale
+      multi_column: false
+      scanned: false
+      formulas: false
     notes: Same ETF as the factsheet. Same disclaimer gate.
-
   - id: amundi-msci-world-prospectus
-    title: Amundi Core MSCI World UCITS ETF Acc, UCITS prospectus
+    title: Amundi ETF ICAV, prospectus du 08/07/2026
     publisher: Amundi Asset Management
     download: manual
     source_page: https://www.amundietf.com/
     instructions: >-
-      Accept the investor-profile disclaimer, open ISIN IE000BI8OT95, and download the
-      prospectus in English from Documents.
-    sha256: ""
-    language: en
+      Accept the investor-profile disclaimer, open ISIN IE000BI8OT95, and download the French
+      prospectus dated 08/07/2026 from Documents.
+    sha256: ecab9f7924d712be5c176821725705f2a93db97dad0ca4181aa60ff1d6115a25
+    pages: 551
+    language: fr
+    properties:
+      tables: true # sub-fund fee and share-class tables
+      images: false # only icons and check boxes
+      multi_column: false
+      scanned: false
+      formulas: false
     notes: >-
-      Same ETF as the factsheet and KID, so questions can span the three documents. Same
-      disclaimer gate.
-
+      Umbrella prospectus of Amundi ETF ICAV, covering Amundi Core MSCI World UCITS ETF among
+      its sub-funds, so questions can span it, the KID and the factsheet. Same disclaimer gate.
   - id: ecb-economic-bulletin-2026-06
     title: ECB Economic Bulletin, Issue 6 / 2026
     publisher: European Central Bank

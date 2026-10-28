@@ -17,10 +17,11 @@ def test_committed_manifest_is_valid() -> None:
     assert entries[0].id == "msci-gimi-methodology"
 
 
-def test_committed_manifest_pins_every_auto_entry() -> None:
+def test_committed_manifest_pins_every_source_entry() -> None:
     for entry in load_manifest(MANIFEST):
-        if entry.download == "auto":
+        if entry.download != "derived":
             assert entry.sha256, entry.id
+            assert entry.pages is not None, entry.id
             assert entry.properties is not None, entry.id
 
 
