@@ -1,0 +1,39 @@
+# Weekly version updates, one grouped PR per ecosystem. Security updates are a repo setting and
+# run on their own schedule. Commit messages stay conventional: `ci(deps): …`, `chore(deps): …`.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      github-actions:
+        patterns: ["*"]
+    commit-message:
+      prefix: ci
+      include: scope
+    labels: [type:ci, area:ci, priority:p2]
+
+  - package-ecosystem: uv
+    directory: /backend
+    schedule:
+      interval: weekly
+    groups:
+      backend:
+        patterns: ["*"]
+    commit-message:
+      prefix: chore
+      include: scope
+    labels: [type:chore, area:backend, priority:p2]
+
+  - package-ecosystem: npm
+    directory: /frontend
+    schedule:
+      interval: weekly
+    groups:
+      frontend:
+        patterns: ["*"]
+    commit-message:
+      prefix: chore
+      include: scope
+    labels: [type:chore, area:frontend, priority:p2]
