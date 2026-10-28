@@ -2,7 +2,7 @@
 name: Feature
 about: A scoped piece of work for the backend, frontend, agents or evaluation
 title: 'feat: '
-labels: enhancement
+labels: type:feat
 ---
 
 ## Goal
@@ -12,6 +12,12 @@ labels: enhancement
 ## Contract reference
 
 <!-- AGENTS.md / docs/architecture.md sections this implements, e.g. "AGENTS.md § Events". -->
+
+## Scope
+
+<!-- What the PR will build, as a list. -->
+
+-
 
 ## Dependencies
 
