@@ -40,8 +40,11 @@ template; actual workers are created at runtime.
    on the dashboard traces back to a metric in `rag_hive.evaluation`, never to free text.
 3. **Provenance is kept end to end.** A `Chunk` keeps its page, element type, parent, bbox and
    parser, so any retrieved passage can be shown in the PDF.
-4. **Provider-agnostic.** Agents and embedders go through the provider set in `Settings`
-   (`LLM_PROVIDER`, `EMBEDDING_PROVIDER`), never through a hardcoded SDK client.
+4. **Local-first, provider-agnostic.** Agents and embedders go through the provider set in
+   `Settings` (`LLM_PROVIDER`, `EMBEDDING_PROVIDER`), never through a hardcoded SDK client.
+   Runtime providers are local: Ollama for the LLM, sentence-transformers (BGE-M3) for
+   embeddings. No paid API is called at runtime
+   ([ADR-005](DECISIONS.md#adr-005-local-first-no-paid-api-at-runtime)).
 5. **Failures are events.** An agent that fails emits an `error` event with the actual reason;
    a failing worker does not stop the other workers.
 

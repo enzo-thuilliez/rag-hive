@@ -5,11 +5,13 @@ Instructions for Claude Code (and other agents) working in this repository.
 ## What this repo is
 
 RAG Hive benchmarks RAG pipelines (parsing × chunking × embedding × retrieval) on a PDF with a
-multi-agent LangGraph workflow, and streams the agents' work to a React dashboard. See
+multi-agent LangGraph workflow, and streams the agents' work to a React dashboard. It is
+local-first: Ollama for the LLM, BGE-M3 via sentence-transformers for embeddings, no paid API
+at runtime (ADR-005). Claude Code is a dev tool here, not a runtime dependency. See
 [README.md](README.md) for the pitch. See [AGENTS.md](AGENTS.md) for the agent workflow, the
 event contract and the coding-agent workflow. Treat AGENTS.md as the spec.
 
-**Current stage: Phase 0 done (scaffolding), see [ROADMAP.md](ROADMAP.md).** Interfaces,
+**Current stage: scaffolding done, corpus next, see [ROADMAP.md](ROADMAP.md).** Interfaces,
 registries, the event schema and the endpoints exist; no parser, chunker, embedder, retriever,
 agent or evaluation logic does. Check before referencing a function or class as if it's real.
 

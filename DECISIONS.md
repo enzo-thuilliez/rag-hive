@@ -56,3 +56,22 @@ ones, supersede them instead.
   the built app and the API from one origin with one routing rule. Every API URL gets five
   more characters, and anything outside the app that called the old root paths must move to
   `/api`.
+
+## ADR-005: Local-first, no paid API at runtime
+
+- **Status:** accepted (2026-10-28)
+- **Context:** The scaffold defaulted to Anthropic for the agents and OpenAI for embeddings,
+  so a benchmark run needed API keys and cost money per run. A benchmark that runs every
+  parsing × chunking × embedding × retrieval config on several PDFs makes many calls, and
+  results that depend on a hosted model's version are hard to reproduce.
+- **Decision:** Runtime providers are local only: Ollama (Qwen) for the LLM and BGE-M3 through
+  sentence-transformers for embeddings. `Settings` keeps `LLM_PROVIDER` and
+  `EMBEDDING_PROVIDER`, and components still go through them (AGENTS.md invariant 4), but the
+  only accepted values are `ollama` and `sentence-transformers`. The `anthropic` and `openai`
+  SDKs are no longer dependencies. Claude Code is a development tool for working on the repo;
+  nothing in `backend/` or `frontend/` calls it.
+- **Consequences:** A run costs nothing and works offline once the models are pulled, and
+  pinned local models make results reproducible. Setup needs Ollama running and a few GB of
+  model downloads; CPU-only machines run slower. Local models grade and generate less well
+  than hosted ones, so the Judge's LLM grades need calibration. Adding a hosted provider later
+  means a new ADR that supersedes this one.
