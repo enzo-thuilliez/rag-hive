@@ -12,3 +12,7 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Monorepo scaffold: FastAPI backend with `/health`, the SSE event stream and the workflow
   graph; component interfaces and registries; agent event schema; React dashboard shell with
   placeholder pages; Makefile, pre-commit, CI and contribution docs.
+
+### Fixed
+
+- CI backend job: pin `astral-sh/setup-uv` by commit SHA; `@v10` does not resolve.
