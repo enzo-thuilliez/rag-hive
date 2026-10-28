@@ -23,11 +23,10 @@ export default defineConfig(({ mode }) => {
     server: {
       port: Number(setting(env, "FRONTEND_PORT", "5173")),
       strictPort: true,
-      // Same-origin calls in dev: no CORS, and SSE streams through the proxy.
+      // Same-origin calls in dev: no CORS, and SSE streams through the proxy. The backend serves
+      // only /api (ADR-004); every other path is the app's.
       proxy: {
-        "/health": { target: backend, changeOrigin: true },
-        // Only the API paths: the SPA's own /runs/:runId/map and /results routes share the prefix.
-        "^/runs/[^/]+/(events|graph)$": { target: backend, changeOrigin: true },
+        "/api": { target: backend, changeOrigin: true },
       },
     },
     test: {

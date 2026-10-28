@@ -1,9 +1,14 @@
 import { describe, expect, it } from "vitest";
+import { API_PREFIX } from "./client";
 import { AGENT_EVENT_TYPES, AGENT_NAMES } from "./events";
 import { EDGE_KINDS } from "./graph";
 import schema from "./schema.json";
 
 describe("TS mirror matches the backend schema (make schema)", () => {
+  it("uses the backend's API prefix", () => {
+    expect(API_PREFIX).toBe(schema.apiPrefix);
+  });
+
   it("lists every event type", () => {
     const backendTypes = Object.keys(schema.AgentEvent.discriminator.mapping);
     expect([...AGENT_EVENT_TYPES].sort()).toEqual(backendTypes.sort());

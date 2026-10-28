@@ -1,5 +1,5 @@
 /**
- * Agent events streamed over SSE by `GET /runs/{runId}/events`.
+ * Agent events streamed over SSE by `GET /api/runs/{runId}/events`.
  *
  * Mirrors `backend/src/rag_hive/events/schema.py`. `schema.test.ts` checks these against the
  * exported `schema.json`; change both sides in the same commit.

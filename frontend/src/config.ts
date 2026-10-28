@@ -11,6 +11,6 @@ function positiveInt(raw: string | undefined, fallback: number): number {
 export const config = {
   /** Backend origin. Empty in dev: requests go to the Vite server, which proxies them. */
   apiBaseUrl: import.meta.env.VITE_API_BASE_URL ?? "",
-  /** How often the header re-checks `/health`, in milliseconds. */
+  /** How often the header re-checks `/api/health`, in milliseconds. */
   healthPollMs: positiveInt(import.meta.env.VITE_HEALTH_POLL_MS, DEFAULT_HEALTH_POLL_MS),
 } as const;

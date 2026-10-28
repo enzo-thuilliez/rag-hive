@@ -1,6 +1,6 @@
 import { useParams } from "react-router";
 
-/** Live map of the agent workflow for one run. Will render `/runs/:runId/graph` with React Flow. */
+/** Live map of the agent workflow for one run. Will render `/api/runs/:runId/graph` with React Flow. */
 export function AgentMapPage() {
   const { runId } = useParams();
   return (

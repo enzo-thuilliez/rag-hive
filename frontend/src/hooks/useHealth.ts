@@ -8,7 +8,7 @@ export type HealthState =
   | { status: "ok"; health: HealthResponse }
   | { status: "error"; message: string };
 
-/** Poll `GET /health` every `pollMs` milliseconds and return the latest result. */
+/** Poll `GET /api/health` every `pollMs` milliseconds and return the latest result. */
 export function useHealth(pollMs: number = config.healthPollMs): HealthState {
   const [state, setState] = useState<HealthState>({ status: "loading" });
 

@@ -6,7 +6,7 @@ const styles = {
   error: "bg-rose-100 text-rose-800",
 } as const;
 
-/** Header pill showing whether the backend answers `/health`. */
+/** Header pill showing whether the backend answers `/api/health`. */
 export function HealthBadge() {
   const health = useHealth();
   const label =
