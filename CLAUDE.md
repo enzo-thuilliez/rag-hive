@@ -11,9 +11,9 @@ at runtime (ADR-005). Claude Code is a dev tool here, not a runtime dependency. 
 [README.md](README.md) for the pitch. See [AGENTS.md](AGENTS.md) for the agent workflow, the
 event contract and the coding-agent workflow. Treat AGENTS.md as the spec.
 
-**Current stage: scaffolding done, corpus in progress, see [ROADMAP.md](ROADMAP.md).** Every
-planned module exists as a typed stub: models, interfaces and docstrings, with bodies that raise
-`NotImplementedError` (module map in [docs/architecture.md](docs/architecture.md#module-map)).
+**Current stage: scaffolding and corpus done, golden set next, see [ROADMAP.md](ROADMAP.md).**
+Every planned module exists as a typed stub: models, interfaces and docstrings, with bodies that
+raise `NotImplementedError` (module map in [docs/architecture.md](docs/architecture.md#module-map)).
 The registries, the event schema, the endpoints and the workflow wiring are real; no parser,
 chunker, embedder, retriever, LLM, agent or metric logic is. Check before calling a function as
 if it works. Stub signatures are frozen: changing one needs an ADR (ADR-006).
