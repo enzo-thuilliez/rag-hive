@@ -11,9 +11,12 @@ at runtime (ADR-005). Claude Code is a dev tool here, not a runtime dependency. 
 [README.md](README.md) for the pitch. See [AGENTS.md](AGENTS.md) for the agent workflow, the
 event contract and the coding-agent workflow. Treat AGENTS.md as the spec.
 
-**Current stage: scaffolding done, corpus next, see [ROADMAP.md](ROADMAP.md).** Interfaces,
-registries, the event schema and the endpoints exist; no parser, chunker, embedder, retriever,
-agent or evaluation logic does. Check before referencing a function or class as if it's real.
+**Current stage: scaffolding done, corpus next, see [ROADMAP.md](ROADMAP.md).** Every planned
+module exists as a typed stub: models, interfaces and docstrings, with bodies that raise
+`NotImplementedError` (module map in [docs/architecture.md](docs/architecture.md#module-map)).
+The registries, the event schema, the endpoints and the workflow wiring are real; no parser,
+chunker, embedder, retriever, LLM, agent or metric logic is. Check before calling a function as
+if it works. Stub signatures are frozen: changing one needs an ADR (ADR-006).
 
 ## Repository layout
 
@@ -25,17 +28,26 @@ A monorepo with two independent projects:
   - `api/`: one router under `/api` (`/api/health`, `/api/runs/{run_id}/events` SSE,
     `/api/runs/{run_id}/graph`, docs at `/api/docs`). Every backend route goes under `/api`
     (ADR-004); a test fails otherwise.
-  - `core/`: `WireModel` (camelCase JSON base), data models (`ParsedDocument`, `Chunk`,
-    `ScoredChunk`), `Component` base and the generic `Registry`.
+  - `core/`: `WireModel` (camelCase JSON base), `DataModel` (snake_case base for repo files
+    and agent state), data models (`ParsedDocument`, `Chunk`, `ScoredChunk`), `Component` base
+    and the generic `Registry`.
   - `parsers/`, `chunkers/`, `embedders/`, `retrievers/`: one async ABC + one registry each in
     `base.py`. Implementations go in sibling modules and register with `@<kind>_registry.register`.
+    `embedders/sentence_transformer.py` is the default (BGE-M3).
+  - `llm/`: `LLMProvider` ABC, `llm_registry`, `create_llm`; `ollama.py` is the only provider.
   - `events/`: the `AgentEvent` schema, SSE framing, the injectable `RunEventSource`.
-  - `agents/`: the LangGraph workflow (to come) and its static `topology.py`.
-  - `evaluation/`: metrics for the Judge (to come).
-  - `schema.py`: exports wire types to `frontend/src/api/schema.json` (`make schema`).
+  - `agents/`: one module per agent (input/output models, `run_*`, LangGraph node),
+    `state.py` (`WorkflowState`), `graph.py` (the topology, the `StateGraph` and the `RunGraph`
+    served to the dashboard), `topology.py` (`RunGraph` wire types).
+  - `corpus/`: `CorpusEntry`, manifest loading, the checksum-verified downloader.
+  - `evaluation/`: `golden.py` (`GoldenQuestion`), `span_matching.py`, `metrics/retrieval.py`,
+    `metrics/parsing.py`.
+  - `schema.py`: `make schema` exports wire types to `frontend/src/api/schema.json` and the
+    `CorpusEntry` / `GoldenQuestion` schemas to `docs/schemas/`.
 - `frontend/`: Vite + React + TypeScript app managed with pnpm. `src/api/` holds the typed
   client and the hand-written mirrors of backend wire types; `src/pages/` the routes.
-- `docs/`: architecture notes. `data/`: local PDFs and outputs, gitignored.
+- `docs/`: architecture notes and generated data schemas. `data/`: local PDFs and outputs,
+  gitignored.
 
 ## Conventions
 
