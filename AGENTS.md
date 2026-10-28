@@ -26,7 +26,7 @@ Profiler → Planner → QA Generator → Workers (parallel) → Judge → Repor
 | Judge | All worker outputs | Retrieval and answer scores per config |
 | Reporter | Scores | Ranking and summary for the dashboard |
 
-The static topology is served by `GET /runs/{run_id}/graph`
+The static topology is served by `GET /api/runs/{run_id}/graph`
 ([`agents/topology.py`](backend/src/rag_hive/agents/topology.py)). The `worker` node is a
 template; actual workers are created at runtime.
 
@@ -73,7 +73,7 @@ Invariants:
 
 ### SSE transport
 
-`GET /runs/{run_id}/events` streams `text/event-stream` frames:
+`GET /api/runs/{run_id}/events` streams `text/event-stream` frames:
 
 ```text
 id: <seq>

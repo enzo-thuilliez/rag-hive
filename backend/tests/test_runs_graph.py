@@ -5,7 +5,7 @@ from rag_hive.events.schema import AgentName
 
 
 def test_graph_covers_every_agent_once(client: TestClient) -> None:
-    response = client.get("/runs/run-1/graph")
+    response = client.get("/api/runs/run-1/graph")
 
     assert response.status_code == 200
     graph = RunGraph.model_validate(response.json())
@@ -14,7 +14,7 @@ def test_graph_covers_every_agent_once(client: TestClient) -> None:
 
 
 def test_graph_edges_reference_existing_nodes(client: TestClient) -> None:
-    graph = RunGraph.model_validate(client.get("/runs/run-1/graph").json())
+    graph = RunGraph.model_validate(client.get("/api/runs/run-1/graph").json())
 
     node_ids = {node.id for node in graph.nodes}
     for edge in graph.edges:
@@ -23,12 +23,12 @@ def test_graph_edges_reference_existing_nodes(client: TestClient) -> None:
 
 
 def test_only_workers_are_dynamic(client: TestClient) -> None:
-    graph = RunGraph.model_validate(client.get("/runs/run-1/graph").json())
+    graph = RunGraph.model_validate(client.get("/api/runs/run-1/graph").json())
 
     assert [node.agent for node in graph.nodes if node.dynamic] == [AgentName.WORKER]
 
 
 def test_graph_json_is_camel_case(client: TestClient) -> None:
-    body = client.get("/runs/run-1/graph").json()
+    body = client.get("/api/runs/run-1/graph").json()
 
     assert "runId" in body

@@ -1,5 +1,5 @@
 /**
- * Agent workflow topology returned by `GET /runs/{runId}/graph`.
+ * Agent workflow topology returned by `GET /api/runs/{runId}/graph`.
  *
  * Mirrors `backend/src/rag_hive/agents/topology.py`, checked by `schema.test.ts`.
  */

@@ -20,7 +20,9 @@ A monorepo with two independent projects:
 - `backend/`: Python 3.12 project managed with `uv` (its own `pyproject.toml` and `uv.lock`).
   src layout, package `rag_hive`:
   - `main.py`: `create_app()` factory. `config.py`: `Settings` (pydantic-settings).
-  - `api/`: routers (`/health`, `/runs/{run_id}/events` SSE, `/runs/{run_id}/graph`).
+  - `api/`: one router under `/api` (`/api/health`, `/api/runs/{run_id}/events` SSE,
+    `/api/runs/{run_id}/graph`, docs at `/api/docs`). Every backend route goes under `/api`
+    (ADR-004); a test fails otherwise.
   - `core/`: `WireModel` (camelCase JSON base), data models (`ParsedDocument`, `Chunk`,
     `ScoredChunk`), `Component` base and the generic `Registry`.
   - `parsers/`, `chunkers/`, `embedders/`, `retrievers/`: one async ABC + one registry each in
@@ -56,7 +58,7 @@ A monorepo with two independent projects:
 
 ```bash
 make install      # uv sync + pnpm install + pre-commit hooks
-make dev          # backend :8000 (reload) + frontend :5173 (proxies the API paths)
+make dev          # backend :8000 (reload) + frontend :5173 (proxies /api)
 make lint         # ruff check + format check, eslint, prettier check
 make typecheck    # mypy --strict, tsc -b
 make test         # pytest, vitest

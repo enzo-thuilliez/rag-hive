@@ -38,3 +38,21 @@ ones, supersede them instead.
 - **Consequences:** CPU-bound implementations must offload work (`asyncio.to_thread`) to keep
   the event loop free. Registry names appear in benchmark results, so renaming one is a
   breaking change.
+
+## ADR-004: Every backend route lives under `/api`
+
+- **Status:** accepted (2026-10-28)
+- **Context:** The backend served `/health` and `/runs/{id}/...` at the root, and the frontend
+  routes `/runs/:runId/map` and `/runs/:runId/results` share that `/runs` prefix. The Vite
+  proxy needed one rule per endpoint plus a regex to keep the app's pages out of it, and a
+  single-origin production deploy would hit the same collision on every deep link.
+- **Decision:** One `APIRouter(prefix="/api")` mounts every backend router, and FastAPI's
+  OpenAPI routes move to `/api/docs` and `/api/openapi.json`. The frontend owns every other
+  path. The dev proxy is a single `/api` rule, and the client prefixes each call with
+  `API_PREFIX`, checked against the backend's through `schema.json` (ADR-001). A backend test
+  fails if any route, OpenAPI path or old root path answers outside `/api`. The endpoint in
+  ADR-002 is now `GET /api/runs/{run_id}/events`; its decision is otherwise unchanged.
+- **Consequences:** New endpoints need no proxy or deploy changes, and production can serve
+  the built app and the API from one origin with one routing rule. Every API URL gets five
+  more characters, and anything outside the app that called the old root paths must move to
+  `/api`.

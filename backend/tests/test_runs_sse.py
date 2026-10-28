@@ -48,7 +48,7 @@ def use_source(client: TestClient, source: FakeEventSource) -> None:
 
 
 def test_default_source_streams_nothing(client: TestClient) -> None:
-    response = client.get("/runs/run-1/events")
+    response = client.get("/api/runs/run-1/events")
 
     assert response.status_code == 200
     assert response.headers["content-type"].startswith("text/event-stream")
@@ -59,7 +59,7 @@ def test_frames_carry_seq_as_id_and_type_as_event(client: TestClient) -> None:
     source = FakeEventSource(make_events(2))
     use_source(client, source)
 
-    frames = parse_frames(client.get("/runs/run-1/events").text)
+    frames = parse_frames(client.get("/api/runs/run-1/events").text)
 
     assert [frame["id"] for frame in frames] == ["1", "2"]
     assert {frame["event"] for frame in frames} == {"progress"}
@@ -72,7 +72,7 @@ def test_last_event_id_resumes_after_that_seq(client: TestClient) -> None:
     source = FakeEventSource(make_events(4))
     use_source(client, source)
 
-    response = client.get("/runs/run-1/events", headers={"Last-Event-ID": "2"})
+    response = client.get("/api/runs/run-1/events", headers={"Last-Event-ID": "2"})
 
     assert source.calls == [("run-1", 2)]
     assert [frame["id"] for frame in parse_frames(response.text)] == ["3", "4"]
@@ -80,5 +80,5 @@ def test_last_event_id_resumes_after_that_seq(client: TestClient) -> None:
 
 def test_invalid_last_event_id_is_rejected(client: TestClient) -> None:
     for bad in ("abc", "-1"):
-        response = client.get("/runs/run-1/events", headers={"Last-Event-ID": bad})
+        response = client.get("/api/runs/run-1/events", headers={"Last-Event-ID": bad})
         assert response.status_code == 400

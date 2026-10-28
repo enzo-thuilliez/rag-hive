@@ -1,7 +1,10 @@
 /** Typed HTTP client for the RAG Hive backend. */
 import { config } from "../config";
 
-/** Body of `GET /health`. Mirrors `HealthResponse` in `backend/src/rag_hive/api/health.py`. */
+/** Prefix of every backend route (`API_PREFIX` in `backend/src/rag_hive/api/__init__.py`). */
+export const API_PREFIX = "/api";
+
+/** Body of `GET /api/health`. Mirrors `HealthResponse` in `backend/src/rag_hive/api/health.py`. */
 export interface HealthResponse {
   status: "ok";
   version: string;
@@ -27,16 +30,18 @@ export function isHealthResponse(value: unknown): value is HealthResponse {
   return body.status === "ok" && typeof body.version === "string";
 }
 
+/** GET `API_PREFIX + path` and return the parsed JSON body. */
 async function getJson(path: string, signal?: AbortSignal): Promise<unknown> {
+  const url = `${config.apiBaseUrl}${API_PREFIX}${path}`;
   let response: Response;
   try {
-    response = await fetch(`${config.apiBaseUrl}${path}`, signal ? { signal } : {});
+    response = await fetch(url, signal ? { signal } : {});
   } catch (error) {
     if (error instanceof DOMException && error.name === "AbortError") throw error;
-    throw new ApiError(`GET ${path} failed: ${String(error)}`);
+    throw new ApiError(`GET ${url} failed: ${String(error)}`);
   }
   if (!response.ok) {
-    throw new ApiError(`GET ${path} returned ${String(response.status)}`, response.status);
+    throw new ApiError(`GET ${url} returned ${String(response.status)}`, response.status);
   }
   return (await response.json()) as unknown;
 }
@@ -44,6 +49,7 @@ async function getJson(path: string, signal?: AbortSignal): Promise<unknown> {
 /** Fetch the backend health. Rejects with `ApiError` if it is unreachable or unhealthy. */
 export async function getHealth(signal?: AbortSignal): Promise<HealthResponse> {
   const body = await getJson("/health", signal);
-  if (!isHealthResponse(body)) throw new ApiError("GET /health returned an unexpected body");
+  if (!isHealthResponse(body))
+    throw new ApiError(`GET ${API_PREFIX}/health returned an unexpected body`);
   return body;
 }

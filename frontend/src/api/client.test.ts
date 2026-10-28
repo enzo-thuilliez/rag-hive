@@ -18,7 +18,7 @@ describe("getHealth", () => {
     );
 
     await expect(getHealth()).resolves.toEqual({ status: "ok", version: "0.1.0" });
-    expect(fetchMock).toHaveBeenCalledWith("/health", {});
+    expect(fetchMock).toHaveBeenCalledWith("/api/health", {});
   });
 
   it("rejects with the status on a non-2xx response", async () => {

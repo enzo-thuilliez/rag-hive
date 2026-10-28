@@ -539,7 +539,7 @@
   },
   "HealthResponse": {
     "additionalProperties": false,
-    "description": "Body of `GET /health`.",
+    "description": "Body of `GET /api/health`.",
     "properties": {
       "status": {
         "const": "ok",
@@ -670,5 +670,6 @@
     ],
     "title": "RunGraph",
     "type": "object"
-  }
+  },
+  "apiPrefix": "/api"
 }
