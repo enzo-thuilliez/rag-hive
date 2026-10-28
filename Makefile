@@ -1,6 +1,6 @@
 .DEFAULT_GOAL := help
 
-.PHONY: help install dev dev-backend dev-frontend lint fmt typecheck test schema
+.PHONY: help install dev dev-backend dev-frontend lint fmt typecheck test schema corpus
 
 help: ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-14s\033[0m %s\n", $$1, $$2}'
@@ -37,3 +37,6 @@ test: ## Run all tests (pytest, vitest)
 
 schema: ## Export the backend wire schema to frontend/src/api/schema.json
 	cd backend && uv run python -m rag_hive.schema
+
+corpus: ## Download the corpus PDFs to data/corpus/raw/ and verify their sha256
+	cd backend && uv run python -m rag_hive.corpus

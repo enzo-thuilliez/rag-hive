@@ -21,7 +21,7 @@
           "type": "boolean"
         },
         "scanned": {
-          "description": "Pages are images without a text layer; needs OCR.",
+          "description": "Pages are scanned images; any text layer comes from OCR, not the source.",
           "title": "Scanned",
           "type": "boolean"
         },
@@ -40,16 +40,41 @@
       ],
       "title": "DocumentProperties",
       "type": "object"
+    },
+    "DownloadMode": {
+      "enum": [
+        "auto",
+        "manual"
+      ],
+      "type": "string"
     }
   },
   "additionalProperties": false,
-  "description": "One document of the benchmark corpus, pinned to an exact version.\n\nThe PDF itself is never committed (redistribution rights): `make corpus` downloads it from\n`url` and refuses it unless its SHA-256 matches `sha256`.",
+  "description": "One document of the benchmark corpus, pinned to an exact version.\n\nThe PDF itself is never committed (redistribution rights). `make corpus` downloads `auto`\nentries from `url`, checks every file present against `sha256`, and prints `instructions`\nfor each `manual` entry whose file is missing. A `manual` entry may leave `sha256` empty\nuntil someone has downloaded and inspected the file; `pages` and `properties` stay unset\nuntil then too.",
   "properties": {
+    "download": {
+      "$ref": "#/$defs/DownloadMode",
+      "default": "auto"
+    },
     "id": {
       "description": "Stable kebab-case slug; golden sets and results reference it.",
       "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
       "title": "Id",
       "type": "string"
+    },
+    "instructions": {
+      "anyOf": [
+        {
+          "minLength": 1,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "One line on what to download there. `manual` only.",
+      "title": "Instructions"
     },
     "language": {
       "description": "ISO 639-1 code of the main language, e.g. `en`.",
@@ -64,12 +89,30 @@
       "type": "string"
     },
     "pages": {
-      "minimum": 1,
-      "title": "Pages",
-      "type": "integer"
+      "anyOf": [
+        {
+          "minimum": 1,
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Set once the file is pinned.",
+      "title": "Pages"
     },
     "properties": {
-      "$ref": "#/$defs/DocumentProperties"
+      "anyOf": [
+        {
+          "$ref": "#/$defs/DocumentProperties"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Set once the file is pinned and inspected."
     },
     "publisher": {
       "minLength": 1,
@@ -77,10 +120,26 @@
       "type": "string"
     },
     "sha256": {
-      "description": "Lowercase hex SHA-256 of the PDF bytes.",
-      "pattern": "^[0-9a-f]{64}$",
+      "description": "Lowercase hex SHA-256 of the PDF bytes. Empty: not pinned yet (`manual`).",
+      "pattern": "^([0-9a-f]{64})?$",
       "title": "Sha256",
       "type": "string"
+    },
+    "source_page": {
+      "anyOf": [
+        {
+          "format": "uri",
+          "maxLength": 2083,
+          "minLength": 1,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Page a person downloads the file from. `manual` only.",
+      "title": "Source Page"
     },
     "title": {
       "minLength": 1,
@@ -88,23 +147,28 @@
       "type": "string"
     },
     "url": {
-      "description": "Direct download URL of the pinned version.",
-      "format": "uri",
-      "maxLength": 2083,
-      "minLength": 1,
-      "title": "Url",
-      "type": "string"
+      "anyOf": [
+        {
+          "format": "uri",
+          "maxLength": 2083,
+          "minLength": 1,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Direct download URL of the pinned version. `auto` only.",
+      "title": "Url"
     }
   },
   "required": [
     "id",
     "title",
     "publisher",
-    "url",
     "sha256",
-    "pages",
-    "language",
-    "properties"
+    "language"
   ],
   "title": "CorpusEntry",
   "type": "object"

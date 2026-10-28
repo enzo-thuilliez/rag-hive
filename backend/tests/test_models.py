@@ -43,7 +43,9 @@ def golden_question(**overrides: object) -> dict[str, object]:
 def test_corpus_entry_accepts_a_valid_entry() -> None:
     entry = CorpusEntry.model_validate(corpus_entry())
 
+    assert entry.properties is not None
     assert entry.properties.formulas
+    assert entry.download == "auto"
     assert entry.notes == ""
 
 
@@ -62,6 +64,44 @@ def test_corpus_entry_accepts_a_valid_entry() -> None:
 def test_corpus_entry_rejects_invalid_fields(overrides: dict[str, object]) -> None:
     with pytest.raises(ValidationError):
         CorpusEntry.model_validate(corpus_entry(**overrides))
+
+
+def manual_entry(**overrides: object) -> dict[str, object]:
+    entry = corpus_entry(
+        download="manual",
+        url=None,
+        source_page="https://example.com/documents",
+        instructions="Accept the disclaimer and download the PDF.",
+        sha256="",
+        pages=None,
+        properties=None,
+    )
+    return entry | overrides
+
+
+def test_unpinned_manual_entry_needs_no_pages_or_properties() -> None:
+    entry = CorpusEntry.model_validate(manual_entry())
+
+    assert entry.sha256 == ""
+    assert entry.properties is None
+
+
+@pytest.mark.parametrize(
+    ("payload", "message"),
+    [
+        (corpus_entry(url=None), "needs `url` and `sha256`"),
+        (corpus_entry(sha256=""), "needs `url` and `sha256`"),
+        (corpus_entry(instructions="Click here."), "are for manual entries"),
+        (manual_entry(instructions=None), "needs `source_page` and `instructions`"),
+        (manual_entry(url="https://example.com/doc.pdf"), "has no direct `url`"),
+        (manual_entry(sha256=SHA), "needs `pages` and `properties`"),
+    ],
+)
+def test_corpus_entry_fields_must_match_download_mode(
+    payload: dict[str, object], message: str
+) -> None:
+    with pytest.raises(ValidationError, match=message):
+        CorpusEntry.model_validate(payload)
 
 
 def test_corpus_entry_requires_every_property() -> None:
