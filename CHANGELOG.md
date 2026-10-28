@@ -13,6 +13,12 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   graph; component interfaces and registries; agent event schema; React dashboard shell with
   placeholder pages; Makefile, pre-commit, CI and contribution docs.
 
+### Changed
+
+- Every backend route now lives under `/api` (`/api/health`, `/api/runs/{run_id}/events`,
+  `/api/runs/{run_id}/graph`, docs at `/api/docs`); the dev proxy is a single `/api` rule
+  (ADR-004).
+
 ### Fixed
 
 - CI backend job: pin `astral-sh/setup-uv` by commit SHA; `@v10` does not resolve.
