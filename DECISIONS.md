@@ -119,3 +119,30 @@ ones, supersede them instead.
   someone downloads the manual files once, and benchmarks that need them fail loudly until
   then. Unpinned manual entries are visible in the manifest (`sha256: ""`) and in
   `make corpus` output.
+
+## ADR-008: Page ranges and derived image-only corpus files
+
+- **Status:** accepted (2026-10-29). Amends the `CorpusEntry` interface (ADR-006, ADR-007).
+- **Context:** The 1920 Federal Reserve report has 645 pages, far more than a benchmark run
+  needs, and its scan carries a 2009 OCR text layer, so text-layer parsers read that old OCR
+  and never face a real scan. Comparing OCR parsers needs the same pages with no text layer at
+  all. That file cannot be downloaded from anywhere; it has to be generated, and committing it
+  is out of the question (redistribution rights, as for every corpus PDF).
+- **Decision:** `CorpusEntry` gets an optional `page_range` (`"20-31,141-154,163-176"`:
+  1-based, inclusive, ascending, disjoint, within `pages`). The pinned file stays whole; the
+  benchmark uses only the selected pages (`CorpusEntry.selected_pages()`). A third mode,
+  `download: derived`, with a `derivation` (`kind: image_only`, `source`, `dpi`), describes a
+  file that `make corpus` generates into `data/corpus/derived/` from its source's selected
+  pages: grayscale renders, one JPEG image per page, no text, fonts or vector content. A
+  derived entry has no `sha256`, since its bytes depend on the pypdfium2 and Pillow versions.
+  Instead the file stores a record of its source checksum, pages and dpi in its PDF
+  `Keywords` and is regenerated when the record differs. It declares `pages` (validated
+  against its source's selection) and `properties`, and no `page_range` of its own.
+  `sha256` now defaults to empty. `sync_corpus` takes the derived directory, and
+  `ensure_document` refuses derived entries.
+- **Consequences:** The FRASER report costs 40 pages of benchmark time instead of 645, and OCR
+  parsers can be compared on a true scan of the same pages a text-layer parser reads. Derived
+  files are reproducible from pinned sources but not byte-identical across library versions,
+  so results that depend on their exact pixels name the library versions from `uv.lock`.
+  pypdfium2 and Pillow become runtime dependencies (permissive licenses; PyMuPDF, AGPL, was
+  avoided).

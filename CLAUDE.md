@@ -40,7 +40,8 @@ A monorepo with two independent projects:
     `state.py` (`WorkflowState`), `graph.py` (the topology, the `StateGraph` and the `RunGraph`
     served to the dashboard), `topology.py` (`RunGraph` wire types).
   - `corpus/`: `CorpusEntry` / `CorpusManifest`, manifest loading, the checksum-verified
-    downloader and `python -m rag_hive.corpus` (`make corpus`).
+    downloader, image-only derived files (`derive.py`) and `python -m rag_hive.corpus`
+    (`make corpus`).
   - `evaluation/`: `golden.py` (`GoldenQuestion`), `span_matching.py`, `metrics/retrieval.py`,
     `metrics/parsing.py`.
   - `schema.py`: `make schema` exports wire types to `frontend/src/api/schema.json` and the
