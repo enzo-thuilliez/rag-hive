@@ -42,8 +42,8 @@ contracts in place but bodies that raise `NotImplementedError`; their interfaces
 | `agents/graph.py` | topology table, `build_workflow` (`StateGraph`), `build_run_graph` (dashboard) | real, except `fan_out_workers` |
 | `agents/topology.py` | `RunGraph` wire types | real |
 | `events/` | `AgentEvent` schema, SSE framing, `RunEventSource` | real (empty source) |
-| `corpus/models.py` | `CorpusEntry`, `DocumentProperties` | real |
-| `corpus/manifest.py`, `corpus/download.py` | manifest loading, checksum-verified download | stub |
+| `corpus/models.py` | `CorpusEntry`, `CorpusManifest`, `DocumentProperties` | real |
+| `corpus/manifest.py`, `corpus/download.py`, `corpus/__main__.py` | manifest loading, checksum-verified download, `make corpus` | real |
 | `evaluation/golden.py` | `GoldenQuestion`, `ExpectedPassage` (validated), golden set loading | model real, loader stub |
 | `evaluation/span_matching.py` | which retrieved chunks cover which expected passages | stub |
 | `evaluation/metrics/retrieval.py` | recall@k, hit rate@k, MRR, nDCG@k, `RetrievalScores` | stub |
@@ -74,9 +74,24 @@ retrieval metrics work on that coverage, so every chunker is scored against the 
 
 ### Data schemas
 
-`make schema` writes `docs/schemas/corpus-entry.schema.json` and
-`docs/schemas/golden-question.schema.json` from the Pydantic models, for editors and other tools
-that validate the corpus manifest and golden sets. A test fails if they are stale.
+`make schema` writes `docs/schemas/corpus-entry.schema.json`, `corpus-manifest.schema.json` and
+`golden-question.schema.json` from the Pydantic models, for editors and other tools that
+validate the corpus manifest and golden sets. A test fails if they are stale.
+
+### Corpus
+
+`data/corpus/manifest.yaml` (committed) pins each PDF by SHA-256; the PDFs live in
+`data/corpus/raw/<id>.pdf` (gitignored, never committed). `make corpus` handles each entry:
+
+| Entry | File present, checksum matches | File present, wrong checksum | File missing |
+| --- | --- | --- | --- |
+| `auto` | kept | downloaded again | downloaded, kept only if the checksum matches |
+| `manual`, pinned | kept | error | instructions printed, error |
+| `manual`, `sha256: ""` | error, prints the file's checksum to pin | same | instructions printed, error |
+
+It exits 1 if any entry is not ready. Downloads go to a temporary file first, so a failed or
+mismatched download never leaves a file under the final name. CI validates the manifest
+against `CorpusManifest` (`tests/test_corpus_manifest.py`) and never downloads.
 
 ## Endpoints
 

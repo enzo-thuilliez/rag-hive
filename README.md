@@ -67,9 +67,20 @@ make dev               # backend on :8000 + frontend on :5173
 make lint              # ruff, eslint, prettier
 make typecheck         # mypy --strict, tsc
 make test              # pytest, vitest
+make corpus            # download and verify the benchmark PDFs
 ```
 
 `make help` lists every target.
+
+## Corpus
+
+The benchmark runs on 10 PDFs listed in [`data/corpus/manifest.yaml`](data/corpus/manifest.yaml),
+each pinned to an exact version by URL and SHA-256. **The PDFs are never committed**: we have no
+right to redistribute them. `make corpus` downloads them to `data/corpus/raw/` (gitignored),
+refuses any file whose checksum differs from the manifest, and skips files already present.
+A few sources sit behind a disclaimer or block automated downloads; for those, `make corpus`
+prints where to download the file by hand and where to save it, then verifies it on the next
+run.
 
 ## Repository layout
 
@@ -77,7 +88,7 @@ make test              # pytest, vitest
 backend/     FastAPI app, LangGraph agents, pipeline components (Python, uv)
 frontend/    React dashboard (Vite, pnpm)
 docs/        architecture notes
-data/        local PDFs and results (gitignored)
+data/        corpus manifest; local PDFs and results (gitignored)
 ```
 
 ## License
