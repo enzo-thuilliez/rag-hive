@@ -10,7 +10,8 @@ For *what* each part should do once built, see [AGENTS.md](AGENTS.md).
 **Objective:** a green skeleton so feature work can start without friction.
 
 - [x] Monorepo: `backend/` (uv, FastAPI) and `frontend/` (Vite, React, TS, Tailwind)
-- [x] `/health`, SSE `/runs/{id}/events` with `Last-Event-ID` resume, `/runs/{id}/graph`
+- [x] `/api/health`, SSE `/api/runs/{id}/events` with `Last-Event-ID` resume,
+      `/api/runs/{id}/graph`
 - [x] Async component interfaces and registries; chunk provenance model
 - [x] Agent event schema, mirrored in TS with a schema sync check
 - [x] Makefile, pre-commit (ruff, mypy, eslint, prettier, tsc, conventional commits), CI

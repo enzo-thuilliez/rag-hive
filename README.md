@@ -41,8 +41,8 @@ results in a dashboard. A live map lets you watch the agents do the work.
    interfaces and register by name, so the Planner can build any combination from a config.
 2. Each agent emits typed events (`agent_started`, `tool_call`, `progress`, `result`, `handoff`,
    `error`), streamed over SSE with resume support.
-3. The frontend draws the workflow graph from `/runs/{id}/graph` and animates it from the event
-   stream.
+3. The frontend draws the workflow graph from `/api/runs/{id}/graph` and animates it from the
+   event stream. The backend serves only `/api`; every other path belongs to the frontend.
 
 More in [docs/architecture.md](docs/architecture.md) and [AGENTS.md](AGENTS.md).
 
