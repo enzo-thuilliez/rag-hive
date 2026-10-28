@@ -14,11 +14,17 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 REPO_ROOT = Path(__file__).resolve().parents[3]
 """Repository root (`backend/src/rag_hive/config.py` is three levels below it)."""
 
-type LLMProvider = Literal["ollama"]
-"""Providers the LLM layer can talk to. Local only: no paid API at runtime (ADR-005)."""
+type LLMProviderName = Literal["ollama"]
+"""Registry names (`llm_registry`) of the LLM providers `Settings` accepts.
 
-type EmbeddingProvider = Literal["sentence-transformers"]
-"""Providers the embedding layer can talk to. Local only: no paid API at runtime (ADR-005)."""
+Local only: no paid API at runtime (ADR-005).
+"""
+
+type EmbeddingProviderName = Literal["sentence-transformers"]
+"""Registry names (`embedder_registry`) of the embedders `Settings` accepts.
+
+Local only: no paid API at runtime (ADR-005).
+"""
 
 type LogLevel = Literal["critical", "error", "warning", "info", "debug"]
 """Log levels accepted by uvicorn."""
@@ -41,10 +47,10 @@ class Settings(BaseSettings):
     cors_origins: list[str] = Field(default_factory=lambda: ["http://localhost:5173"])
     log_level: LogLevel = "info"
 
-    llm_provider: LLMProvider = "ollama"
+    llm_provider: LLMProviderName = "ollama"
     llm_model: str = "qwen3:8b"
     ollama_base_url: str = "http://127.0.0.1:11434"
-    embedding_provider: EmbeddingProvider = "sentence-transformers"
+    embedding_provider: EmbeddingProviderName = "sentence-transformers"
     embedding_model: str = "BAAI/bge-m3"
 
 

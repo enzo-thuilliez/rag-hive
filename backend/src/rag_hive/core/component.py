@@ -1,4 +1,4 @@
-"""Common base for parsers, chunkers, embedders and retrievers."""
+"""Common base for parsers, chunkers, embedders, retrievers and LLM providers."""
 
 from abc import ABC
 from typing import ClassVar
