@@ -11,7 +11,7 @@ router = APIRouter(tags=["health"])
 
 
 class HealthResponse(WireModel):
-    """Body of `GET /health`."""
+    """Body of `GET /api/health`."""
 
     status: Literal["ok"]
     version: str
