@@ -2,7 +2,7 @@
 name: Bug
 about: Something behaves differently from the contract or the docs
 title: 'fix: '
-labels: bug
+labels: type:fix
 ---
 
 ## What happens
