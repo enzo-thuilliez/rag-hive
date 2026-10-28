@@ -89,8 +89,8 @@ non-integer `Last-Event-ID` returns 400.
 
 ## Workflow for coding agents
 
-- **Never commit or push to `main`.** One issue → one branch (`feat/`, `fix/`, `chore/` or
-  `docs/` plus a short slug) → one PR. CI green, then squash merge by the product owner.
+- **Never commit or push to `main`.** One issue → one branch (`<type>/<short-slug>`, `<type>`
+  one of `feat`, `fix`, `chore`, `docs`, `refactor`, `test`, `perf`, `ci`) → one PR. CI green, then squash merge by the product owner.
 - **Start**: read the issue, every issue in its Dependencies, and the AGENTS.md / DECISIONS.md
   sections it cites. If a dependency is still open, stop and say so.
 - **Scope**: anything not in the issue's Acceptance goes under "Left for later" in the PR
