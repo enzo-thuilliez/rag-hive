@@ -47,15 +47,15 @@ Vitest, build) on every push to `main` and every PR. `ci-pass` is the required c
    its Dependencies; if one is still open, the issue isn't ready. Every issue has one `type:*`
    label, one or more `area:*` labels, one `priority:p0|p1|p2` label and the milestone of its
    [roadmap](ROADMAP.md) step.
-2. Branch from `main` as `<type>/<short-slug>`, where `<type>` is the conventional commit type
-   of the change: `feat`, `fix`, `chore`, `docs`, `refactor`, `test`, `perf` or `ci`. One
-   issue, one branch, one PR.
+2. Branch from `main` as `<type>/<issue>-<short-slug>` (e.g. `feat/14-pdfplumber-parser`), where
+   `<type>` is the conventional commit type of the change: `feat`, `fix`, `chore`, `docs`,
+   `refactor`, `test`, `perf` or `ci`. One issue, one branch, one PR.
 3. Commit with [Conventional Commits](https://www.conventionalcommits.org/):
    `type(scope): lowercase summary`, e.g. `feat(backend): add pymupdf parser`.
    Scopes: `backend`, `frontend`, `agents`, `events`, `eval`, `corpus`, `docs`, `ci`, `deps`,
    `repo`.
-4. Add one bullet under `Unreleased` in [CHANGELOG.md](CHANGELOG.md), in its own last commit.
-   Never edit existing bullets.
+4. Don't touch [CHANGELOG.md](CHANGELOG.md): release-please writes it from the squash-merge
+   titles and opens a release PR. Make the PR title a good changelog line.
 5. Before pushing: `make lint`, `make typecheck`, `make test`.
 6. Open a PR against `main` using the template. Its first line is `Closes #N` (or
    `Part of #N` when the PR is one step of the issue).
@@ -78,5 +78,4 @@ apply either way.
 - [AGENTS.md](AGENTS.md) when the agent or event contract changes, in the same PR.
 - `frontend/src/api/` and `schema.json` (`make schema`) when a backend wire type changes.
 - [DECISIONS.md](DECISIONS.md) for decisions with trade-offs (add an ADR).
-- [CHANGELOG.md](CHANGELOG.md) under `Unreleased` for every PR.
 - [ROADMAP.md](ROADMAP.md) when a PR completes a roadmap item (move it to `Done`).

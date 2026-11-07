@@ -1,0 +1,51 @@
+name: Feature
+description: A scoped piece of work for the backend, frontend, agents or evaluation
+title: "feat(scope): "
+labels: ["type:feat"]
+body:
+  - type: markdown
+    attributes:
+      value: Add one or more `area:*` labels, one `priority:*` label and the milestone of its roadmap step.
+  - type: textarea
+    id: goal
+    attributes:
+      label: Goal
+      description: What should exist once this is done, in one or two sentences.
+    validations:
+      required: true
+  - type: input
+    id: contract
+    attributes:
+      label: Contract reference
+      description: AGENTS.md / docs/architecture.md / DECISIONS.md sections this implements.
+      placeholder: "AGENTS.md § Event contract"
+  - type: textarea
+    id: scope
+    attributes:
+      label: Scope
+      description: What the PR will build, as a list.
+      value: "- "
+    validations:
+      required: true
+  - type: input
+    id: dependencies
+    attributes:
+      label: Dependencies
+      description: Issues that must be closed first, or "None".
+      placeholder: "#12, #13"
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance
+      value: |
+        - [ ] 
+        - [ ] make lint, make typecheck and make test pass
+    validations:
+      required: true
+  - type: textarea
+    id: out-of-scope
+    attributes:
+      label: Out of scope
+      description: What this issue deliberately does not cover.

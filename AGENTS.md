@@ -96,10 +96,10 @@ non-integer `Last-Event-ID` returns 400.
 
 ## Workflow for coding agents
 
-- **Never commit or push to `main`.** One issue → one branch (`<type>/<short-slug>`, `<type>`
-  one of `feat`, `fix`, `chore`, `docs`, `refactor`, `test`, `perf`, `ci`) → one PR with
-  `Closes #N` → CI green → squash merge by the product owner. Once CI is green, stop: never
-  merge, enable auto-merge or approve your own PR.
+- **Never commit or push to `main`.** One issue → one branch (`<type>/<issue>-<short-slug>`,
+  e.g. `feat/14-pdfplumber-parser`; `<type>` one of `feat`, `fix`, `chore`, `docs`, `refactor`,
+  `test`, `perf`, `ci`) → one PR with `Closes #N` → CI green → squash merge by the product
+  owner. Once CI is green, stop: never merge, enable auto-merge or approve your own PR.
 - **Issues**: every issue has one `type:*` label, one or more `area:*` labels, one
   `priority:p0|p1|p2` label and the milestone of its roadmap step. A PR with no issue gets one
   first.
@@ -113,8 +113,8 @@ non-integer `Last-Event-ID` returns 400.
 - **Commits**: conventional, `type(scope): lowercase summary`, checked by the commit-msg hook.
   Scopes: `backend`, `frontend`, `agents`, `events`, `eval`, `corpus`, `docs`, `ci`, `deps`,
   `repo`.
-- **CHANGELOG**: one bullet under `Unreleased` in [CHANGELOG.md](CHANGELOG.md), added in its
-  own last commit. Never edit existing bullets.
+- **CHANGELOG**: written by release-please from squash-merge titles. Never edit
+  [CHANGELOG.md](CHANGELOG.md) by hand; make the PR title a good changelog line instead.
 - **Conflicts**: merge `main` into the branch. Never rebase, never force push (denied by
   `.claude/settings.json`).
 - **Dependencies**: ask before adding one. Python with `uv add`, frontend with `pnpm add`.
