@@ -1,15 +1,110 @@
 # AGENTS.md
 
-This file has two parts: the contract for RAG Hive's own agents and events, then the
-workflow for coding agents (Claude Code, Codex, Cursor...) working on this repo. Humans: the
-same workflow is in [CONTRIBUTING.md](CONTRIBUTING.md).
+The single source of instructions for coding agents (Claude Code, Codex, Cursor...) on this
+repo; `CLAUDE.md` only imports it. Three parts: how to work in the repo, the contract for RAG
+Hive's own agents and events, then the issue → branch → PR workflow. Humans: the same workflow
+is in [CONTRIBUTING.md](CONTRIBUTING.md).
 
-> Status: contract and typed stubs. The event schema, the workflow graph, the component
-> interfaces and every agent's input/output models exist in code; no agent logic does.
+> **Current stage: scaffolding and corpus done, golden set next** ([ROADMAP.md](ROADMAP.md)).
+> Every planned module exists as a typed stub: models, interfaces and docstrings, with bodies
+> that raise `NotImplementedError` (module map in
+> [docs/architecture.md](docs/architecture.md#module-map)). The registries, the event schema,
+> the endpoints and the workflow wiring are real; no parser, chunker, embedder, retriever, LLM,
+> agent or metric logic is. Check before calling a function as if it works. Stub signatures
+> are frozen: changing one needs an ADR (ADR-006).
 
 **Language:** everything in this repository is written in English (docs, code, comments,
 docstrings, commit messages, event text, error messages), even when the person asking for the
 change writes in another language.
+
+## Working in this repo
+
+RAG Hive is local-first: Ollama for the LLM, BGE-M3 via sentence-transformers for
+embeddings, no paid API at runtime (ADR-005). Coding agents are dev tools here, not runtime
+dependencies.
+
+### Repository layout
+
+A monorepo with two independent projects:
+
+- `backend/`: Python 3.12 project managed with `uv` (its own `pyproject.toml` and `uv.lock`).
+  src layout, package `rag_hive`:
+  - `main.py`: `create_app()` factory. `config.py`: `Settings` (pydantic-settings).
+  - `api/`: one router under `/api` (`/api/health`, `/api/runs/{run_id}/events` SSE,
+    `/api/runs/{run_id}/graph`, docs at `/api/docs`). Every backend route goes under `/api`
+    (ADR-004); a test fails otherwise.
+  - `core/`: `WireModel` (camelCase JSON base), `DataModel` (snake_case base for repo files
+    and agent state), data models (`ParsedDocument`, `Chunk`, `ScoredChunk`), `Component` base
+    and the generic `Registry`.
+  - `parsers/`, `chunkers/`, `embedders/`, `retrievers/`: one async ABC + one registry each in
+    `base.py`. Implementations go in sibling modules and register with `@<kind>_registry.register`.
+    `embedders/sentence_transformer.py` is the default (BGE-M3).
+  - `llm/`: `LLMProvider` ABC, `llm_registry`, `create_llm`; `ollama.py` is the only provider.
+  - `events/`: the `AgentEvent` schema, SSE framing, the injectable `RunEventSource`.
+  - `agents/`: one module per agent (input/output models, `run_*`, LangGraph node),
+    `state.py` (`WorkflowState`), `graph.py` (the topology, the `StateGraph` and the `RunGraph`
+    served to the dashboard), `topology.py` (`RunGraph` wire types).
+  - `corpus/`: `CorpusEntry` / `CorpusManifest`, manifest loading, the checksum-verified
+    downloader, image-only derived files (`derive.py`) and `python -m rag_hive.corpus`
+    (`make corpus`).
+  - `evaluation/`: `golden.py` (`GoldenQuestion`), `span_matching.py`, `metrics/retrieval.py`,
+    `metrics/parsing.py`.
+  - `schema.py`: `make schema` exports wire types to `frontend/src/api/schema.json` and the
+    `CorpusEntry` / `GoldenQuestion` schemas to `docs/schemas/`.
+- `frontend/`: Vite + React + TypeScript app managed with pnpm. `src/api/` holds the typed
+  client and the hand-written mirrors of backend wire types; `src/pages/` the routes.
+- `docs/`: architecture notes and generated data schemas. `data/`: local PDFs and outputs,
+  gitignored, except `data/corpus/manifest.yaml`. Never commit a PDF.
+
+### Conventions
+
+- **Python**: `uv` only (`uv sync`, `uv run …`, `uv add …`), never `pip`. ruff with
+  `select = ["ALL"]` and documented ignores; `mypy --strict` with the pydantic plugin. No `Any`
+  without a comment saying why. Google-style docstrings on every public module, class and
+  function (ruff `D` enforces it). Raise specific exceptions with a message built in a `msg`
+  variable (ruff `EM`).
+- **Config**: every tunable value is a `Settings` field, read from env / the root `.env`, and
+  documented in `.env.example`. Never read `os.environ` directly or hardcode a URL, port, model
+  or key.
+- **Wire types**: backend Pydantic models extending `WireModel` are the source of truth. If you
+  change one, run `make schema` and update the mirror in `frontend/src/api/` in the same commit;
+  tests on both sides fail otherwise.
+- **TypeScript**: `strict`, no `any`, typescript-eslint `strictTypeChecked`. TSDoc on every
+  export (eslint-plugin-jsdoc enforces it). Prettier: double quotes, width 100.
+- **Components** are async (`parse`, `chunk`, `embed_*`, `index`, `search`) and keep chunk
+  provenance (page, element type, parent, bbox, parser).
+- English only: code, comments, docs, commits.
+
+### Commands
+
+```bash
+make install      # uv sync + pnpm install + pre-commit hooks
+make dev          # backend :8000 (reload) + frontend :5173 (proxies /api)
+make lint         # ruff check + format check, eslint, prettier check
+make typecheck    # mypy --strict, tsc -b
+make test         # pytest, vitest
+make schema       # regenerate frontend/src/api/schema.json and docs/schemas/
+make corpus       # download + verify the corpus PDFs into data/corpus/raw/ (never committed)
+make help
+```
+
+### Docs to keep in sync
+
+- **AGENTS.md**: agent and event contract, coding-agent workflow. If implementation must
+  diverge from the contract, update AGENTS.md in the same change.
+- **DECISIONS.md**: ADRs for decisions with trade-offs.
+- **docs/architecture.md**: components, data flow, the SSE protocol.
+- **ROADMAP.md**: move an item to Done when a PR completes it; each step matches a milestone.
+
+### Code intelligence
+
+This repo is indexed with **GitNexus** (mostly code; the corpus PDFs are never committed).
+
+- Refresh: `gitnexus analyze` at the repo root (the hooks also reindex after commits).
+- Before changing a registry, a wire type, an agent's input/output model or any function used
+  across modules, run GitNexus impact analysis and list the affected callers in the PR.
+- Start exploring from the clusters and processes resources; `docs/architecture.md` has the
+  module map.
 
 ## Agent workflow
 
