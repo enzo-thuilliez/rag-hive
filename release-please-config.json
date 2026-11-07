@@ -3,12 +3,19 @@
     ".": {
       "release-type": "simple",
       "package-name": "rag-hive",
-      "release-as": "0.1.0",
       "include-component-in-tag": false,
       "changelog-path": "CHANGELOG.md",
       "extra-files": [
-        { "type": "toml", "path": "backend/pyproject.toml", "jsonpath": "$.project.version" },
-        { "type": "json", "path": "frontend/package.json", "jsonpath": "$.version" }
+        {
+          "type": "toml",
+          "path": "backend/pyproject.toml",
+          "jsonpath": "$.project.version"
+        },
+        {
+          "type": "json",
+          "path": "frontend/package.json",
+          "jsonpath": "$.version"
+        }
       ]
     }
   }
