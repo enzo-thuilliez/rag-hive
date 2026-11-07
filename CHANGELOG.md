@@ -5,6 +5,22 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this
 project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.1.0 (2026-11-07)
+
+
+### Features
+
+* **backend:** download and verify the corpus with make corpus ([02164b0](https://github.com/enzo-thuilliez/rag-hive/commit/02164b0b01573af7e7e2ed3ca4dba667a1955219))
+* **corpus:** pin manual entries, FRASER page range and image-only variant ([#54](https://github.com/enzo-thuilliez/rag-hive/issues/54)) ([69749ff](https://github.com/enzo-thuilliez/rag-hive/commit/69749ffcd6bb2294d7a2013a077fc4dd7aa652dc))
+* pinned corpus manifest and make corpus ([02e7790](https://github.com/enzo-thuilliez/rag-hive/commit/02e7790baa96d64f284642d269de1560122bc61f))
+* **repo:** pin the 10 corpus documents in the manifest ([c249e9c](https://github.com/enzo-thuilliez/rag-hive/commit/c249e9c139fb8dd104d8077a3bc923e572dcf901))
+
+
+### Bug Fixes
+
+* **ci:** pin setup-uv by commit sha ([cdf4aba](https://github.com/enzo-thuilliez/rag-hive/commit/cdf4aba0b459d8f1befed7b81efba9a031c0db4e))
+* **ci:** pin setup-uv by commit sha ([be499c4](https://github.com/enzo-thuilliez/rag-hive/commit/be499c4d7fe13cf9fecd23f83a945616efc09a67))
+
 ## [Unreleased]
 
 ### Added
