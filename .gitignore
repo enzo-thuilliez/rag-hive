@@ -33,3 +33,9 @@ data/corpus/*
 Thumbs.db
 *.swp
 .idea/
+
+# --- Local agent artifacts (regenerated, never committed) ---
+.gitnexus/
+graphify-out/
+floorplan/
+CLAUDE.local.md
