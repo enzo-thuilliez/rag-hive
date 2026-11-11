@@ -41,6 +41,19 @@ flowchart LR
     reg[("Registries<br/>parsers · chunkers<br/>embedders · retrievers")] -.-> planner
     local[("Ollama + BGE-M3<br/>local models")] -.-> wf
     wf -- "typed events (SSE)" --> ui["React dashboard<br/>agent map · results"]
+    %% api: backend/src/rag_hive/api
+    %% wf: backend/src/rag_hive/agents/graph.py
+    %% profiler: backend/src/rag_hive/agents/profiler.py
+    %% planner: backend/src/rag_hive/agents/planner.py
+    %% qa: backend/src/rag_hive/agents/qa_generator.py
+    %% w1: backend/src/rag_hive/agents/worker.py
+    %% w2: backend/src/rag_hive/agents/worker.py
+    %% w3: backend/src/rag_hive/agents/worker.py
+    %% judge: backend/src/rag_hive/agents/judge.py
+    %% reporter: backend/src/rag_hive/agents/reporter.py
+    %% reg: backend/src/rag_hive/core/registry.py
+    %% local: backend/src/rag_hive/llm/ollama.py
+    %% ui: frontend/src/pages/AgentMapPage.tsx
 ```
 
 1. Pipeline components implement small async interfaces and register by name, so the Planner
