@@ -1,5 +1,7 @@
 name: Release
 
+# Off until the project works: nothing runs while the repository variable RELEASES_ENABLED
+# is unset. Turn releases on with:  gh variable set RELEASES_ENABLED --body true
 on:
   push:
     branches: [main]
@@ -12,6 +14,7 @@ permissions:
 
 jobs:
   release-please:
+    if: vars.RELEASES_ENABLED == 'true'
     runs-on: ubuntu-24.04
     steps:
       - uses: googleapis/release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7 # v5.0.0
